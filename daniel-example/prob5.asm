@@ -5,7 +5,17 @@
 ;from when it first appears. Recall that the Fibonacci series starts with two 1s and then the
 ;subsequent terms are always the sum of the previous two.
 
-MOV r2, 1
-MOV r3, 1
+; Only generates an infinite Fibonacci sequence.
 
-main:	
+MOV r1, 1
+MOV r2, 1
+OUT r1
+OUT r2
+
+main:
+	MOV r3, r2
+	ADD r3, r1
+	MOV r1, r2
+	MOV r3, r2
+	OUT r2
+	JMP main

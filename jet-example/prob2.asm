@@ -3,7 +3,8 @@
 
 main:
 	MOV r1, stdin		;Read stdin and store in r1
-	CMPNULL r1, @END 	;Jump to end if null
+	TSTSNN r1		;Terminate if end of stream
+	JMP @END		
 	MERGE r2, r1, r1	;Make r2 = r1 r1
 	MOV stdout, r2		;Output r2
 	NXT stdin		;Increase stdin to the next value

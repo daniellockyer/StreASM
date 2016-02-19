@@ -6,10 +6,11 @@ MOV r2, 0 	;First output variable to be 0. r2 is 0 anyway but nice to make it ex
 
 main:
 	MOV r1, stdin		;Store the value for next iteration
-	MOV stdout, r2		;Output the variable for this iteration.	 
+	MOV stdout, r2		;Output the variable for this iteration.
+	NXT stdout		;Start a new line on output
 	TSTSNN r1		;Terminate if end of stream
 	JMP @END		
-	MOV r2, r1		;Update the variable to print on the next iteration.
+	SPLIT r2, r1, 0		;Update the variable to print on the next iteration (Take only Stream 0)
 	NXT stdin		;Increase stdin to the next value
 	JMP main
 	

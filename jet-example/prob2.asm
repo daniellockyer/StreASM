@@ -4,8 +4,10 @@
 main:
 	MOV r1, stdin		;Read stdin and store in r1
 	TSTSNN r1		;Terminate if end of stream
-	JMP @END		
+	JMP @END
+	SPLIT r1, r1, 0		;Ignore any extra streams in input
 	MERGE r2, r1, r1	;Make r2 = r1 r1
 	MOV stdout, r2		;Output r2
+	NXT stdout		;Start a new line on output
 	NXT stdin		;Increase stdin to the next value
 	JMP main 		

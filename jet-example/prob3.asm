@@ -10,7 +10,7 @@ main:
 	JMP @END		
 	SPLIT r2, r1, 0		;Save the first variable in r2
 	SPLIT r3, r1, 1		;Save the second variable in r3
-	TSTSNN r1		;Terminate if we did not have a second parameter in r1
+	TSTSNN r3		;Terminate if we did not have a second parameter in r1
 	JMP @END			
 	MLT r3, 3		;Multiply the second by 3
 	ADD r1, r2, r3		;r1 = r2 + r3

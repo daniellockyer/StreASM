@@ -1,0 +1,11 @@
+parser.cmi :
+calc.cmo : parser.cmi lexer.cmo
+calc.cmx : parser.cmx lexer.cmx
+lexer.cmo : parser.cmi
+lexer.cmx : parser.cmx
+main.cmo : Streasm.cmo parser.cmi lexer.cmo
+main.cmx : Streasm.cmx parser.cmx lexer.cmx
+parser.cmo : Streasm.cmo parser.cmi
+parser.cmx : Streasm.cmx parser.cmi
+Streasm.cmo :
+Streasm.cmx :

@@ -1,6 +1,6 @@
 %{
-	open Streasm
-	open Printf
+    open Streasm
+    open Printf
 %}
 %token LABEL_END LABEL_NEXT
 %token INSTR_DEF INSTR_NXT 
@@ -19,57 +19,59 @@
 %%
 
 parser_main
-   	: instruction { }
-   	| label { }
-   	| parser_main instruction { }
-   	| parser_main label { }
-   	| EOF {}
+       : instruction { }
+       | label { }
+       | parser_main instruction { }
+       | parser_main label { }
+       | EOF {}
 ;
 
 label
-	: LABEL {}
-	| LABEL COLON {}
+    : LABEL {}
+    | LABEL COLON {}
 ;
 
-register: IDENTIFIER { getValue $1 };
+register: IDENTIFIER { $1 };
+
+register_value: IDENTIFIER { (getValue $1) };
 
 value
-	: register {  }
-	| LITERAL { }
+    : register_value { $1 }
+    | LITERAL { $1 }
 ;
 
 label_branches
-	: LABEL {}
-	| LABEL_NEXT {}
-	| LABEL_END {}
+    : LABEL {}
+    | LABEL_NEXT {}
+    | LABEL_END {}
 ;
 
 instruction
-	: INSTR_ADD register COMMA value COMMA value { }
-	| INSTR_SUB register COMMA value COMMA value { }
-	| INSTR_MUL register COMMA value COMMA value { }
-	| INSTR_DIV register COMMA value COMMA value { }
-	| INSTR_TSTN register COMMA label_branches COMMA label_branches { }
-	| INSTR_TSTZ register COMMA label_branches COMMA label_branches { }
-	| INSTR_TSTE register COMMA register COMMA label_branches COMMA label_branches { }
-	| INSTR_TSTG register COMMA register COMMA label_branches COMMA label_branches { }
-	| INSTR_TSTGE register COMMA register COMMA label_branches COMMA label_branches { }
-	| INSTR_TSTL register COMMA register COMMA label_branches COMMA label_branches { }
-	| INSTR_TSTLE register COMMA register COMMA  label_branches COMMA label_branches { }
-	| INSTR_AND register COMMA value COMMA value { }
-	| INSTR_OR register COMMA value COMMA value { }
-	| INSTR_NOR register COMMA value COMMA value { }
-	| INSTR_XOR register COMMA value COMMA value { }
-	| INSTR_NAND register COMMA value COMMA value { }
-	| INSTR_COM register COMMA register { }
-	| INSTR_JMP label_branches { }
-	| INSTR_CALL label { }
-	| INSTR_RET {}
-	| INSTR_MOV register COMMA value {}
-	| INSTR_CLR register {}
-	| INSTR_BS register COMMA LITERAL {}
-	| INSTR_BC register	COMMA LITERAL {}
-	| INSTR_BT register COMMA LITERAL COMMA label_branches COMMA label_branches {}
-	| INSTR_DEF IDENTIFIER { }
-	| INSTR_NXT IDENTIFIER COMMA IDENTIFIER {}
+    : INSTR_ADD register COMMA value COMMA value { instr_add $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
+    | INSTR_SUB register COMMA value COMMA value { instr_sub $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
+    | INSTR_MUL register COMMA value COMMA value { }
+    | INSTR_DIV register COMMA value COMMA value { }
+    | INSTR_TSTN register COMMA label_branches COMMA label_branches { }
+    | INSTR_TSTZ register COMMA label_branches COMMA label_branches { }
+    | INSTR_TSTE register COMMA register COMMA label_branches COMMA label_branches { }
+    | INSTR_TSTG register COMMA register COMMA label_branches COMMA label_branches { }
+    | INSTR_TSTGE register COMMA register COMMA label_branches COMMA label_branches { }
+    | INSTR_TSTL register COMMA register COMMA label_branches COMMA label_branches { }
+    | INSTR_TSTLE register COMMA register COMMA  label_branches COMMA label_branches { }
+    | INSTR_AND register COMMA value COMMA value { }
+    | INSTR_OR register COMMA value COMMA value { }
+    | INSTR_NOR register COMMA value COMMA value { }
+    | INSTR_XOR register COMMA value COMMA value { }
+    | INSTR_NAND register COMMA value COMMA value { }
+    | INSTR_COM register COMMA register { }
+    | INSTR_JMP label_branches { }
+    | INSTR_CALL label { }
+    | INSTR_RET {}
+    | INSTR_MOV register COMMA value { instr_mov $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
+    | INSTR_CLR register {}
+    | INSTR_BS register COMMA LITERAL {}
+    | INSTR_BC register COMMA LITERAL {}
+    | INSTR_BT register COMMA LITERAL COMMA label_branches COMMA label_branches {}
+    | INSTR_DEF IDENTIFIER { }
+    | INSTR_NXT IDENTIFIER COMMA IDENTIFIER {}
 ;

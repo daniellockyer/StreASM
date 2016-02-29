@@ -1,0 +1,220 @@
+   0  $accept : %entry% $end
+
+   1  parser_main : instruction
+   2              | label
+   3              | parser_main instruction
+   4              | parser_main label
+   5              | EOF
+
+   6  label : register COLON
+
+   7  register : IDENTIFIER
+
+   8  instruction_add : INSTR_ADD register COMMA register COMMA register
+   9                  | INSTR_ADD register COMMA register COMMA LITERAL
+  10                  | INSTR_ADD register COMMA LITERAL COMMA LITERAL
+  11                  | INSTR_ADD register COMMA LITERAL COMMA register
+
+  12  instruction : instruction_add
+
+  13  %entry% : '\001' parser_main
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . parser_main  (13)
+
+	INSTR_ADD  shift 3
+	EOF  shift 4
+	IDENTIFIER  shift 5
+	.  error
+
+	parser_main  goto 6
+	instruction  goto 7
+	label  goto 8
+	register  goto 9
+	instruction_add  goto 10
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	instruction_add : INSTR_ADD . register COMMA register COMMA register  (8)
+	instruction_add : INSTR_ADD . register COMMA register COMMA LITERAL  (9)
+	instruction_add : INSTR_ADD . register COMMA LITERAL COMMA LITERAL  (10)
+	instruction_add : INSTR_ADD . register COMMA LITERAL COMMA register  (11)
+
+	IDENTIFIER  shift 5
+	.  error
+
+	register  goto 11
+
+
+state 4
+	parser_main : EOF .  (5)
+
+	.  reduce 5
+
+
+state 5
+	register : IDENTIFIER .  (7)
+
+	.  reduce 7
+
+
+state 6
+	parser_main : parser_main . instruction  (3)
+	parser_main : parser_main . label  (4)
+	%entry% : '\001' parser_main .  (13)
+
+	INSTR_ADD  shift 3
+	IDENTIFIER  shift 5
+	$end  reduce 13
+
+	instruction  goto 12
+	label  goto 13
+	register  goto 9
+	instruction_add  goto 10
+
+
+state 7
+	parser_main : instruction .  (1)
+
+	.  reduce 1
+
+
+state 8
+	parser_main : label .  (2)
+
+	.  reduce 2
+
+
+state 9
+	label : register . COLON  (6)
+
+	COLON  shift 14
+	.  error
+
+
+state 10
+	instruction : instruction_add .  (12)
+
+	.  reduce 12
+
+
+state 11
+	instruction_add : INSTR_ADD register . COMMA register COMMA register  (8)
+	instruction_add : INSTR_ADD register . COMMA register COMMA LITERAL  (9)
+	instruction_add : INSTR_ADD register . COMMA LITERAL COMMA LITERAL  (10)
+	instruction_add : INSTR_ADD register . COMMA LITERAL COMMA register  (11)
+
+	COMMA  shift 15
+	.  error
+
+
+state 12
+	parser_main : parser_main instruction .  (3)
+
+	.  reduce 3
+
+
+state 13
+	parser_main : parser_main label .  (4)
+
+	.  reduce 4
+
+
+state 14
+	label : register COLON .  (6)
+
+	.  reduce 6
+
+
+state 15
+	instruction_add : INSTR_ADD register COMMA . register COMMA register  (8)
+	instruction_add : INSTR_ADD register COMMA . register COMMA LITERAL  (9)
+	instruction_add : INSTR_ADD register COMMA . LITERAL COMMA LITERAL  (10)
+	instruction_add : INSTR_ADD register COMMA . LITERAL COMMA register  (11)
+
+	LITERAL  shift 16
+	IDENTIFIER  shift 5
+	.  error
+
+	register  goto 17
+
+
+state 16
+	instruction_add : INSTR_ADD register COMMA LITERAL . COMMA LITERAL  (10)
+	instruction_add : INSTR_ADD register COMMA LITERAL . COMMA register  (11)
+
+	COMMA  shift 18
+	.  error
+
+
+state 17
+	instruction_add : INSTR_ADD register COMMA register . COMMA register  (8)
+	instruction_add : INSTR_ADD register COMMA register . COMMA LITERAL  (9)
+
+	COMMA  shift 19
+	.  error
+
+
+state 18
+	instruction_add : INSTR_ADD register COMMA LITERAL COMMA . LITERAL  (10)
+	instruction_add : INSTR_ADD register COMMA LITERAL COMMA . register  (11)
+
+	LITERAL  shift 20
+	IDENTIFIER  shift 5
+	.  error
+
+	register  goto 21
+
+
+state 19
+	instruction_add : INSTR_ADD register COMMA register COMMA . register  (8)
+	instruction_add : INSTR_ADD register COMMA register COMMA . LITERAL  (9)
+
+	LITERAL  shift 22
+	IDENTIFIER  shift 5
+	.  error
+
+	register  goto 23
+
+
+state 20
+	instruction_add : INSTR_ADD register COMMA LITERAL COMMA LITERAL .  (10)
+
+	.  reduce 10
+
+
+state 21
+	instruction_add : INSTR_ADD register COMMA LITERAL COMMA register .  (11)
+
+	.  reduce 11
+
+
+state 22
+	instruction_add : INSTR_ADD register COMMA register COMMA LITERAL .  (9)
+
+	.  reduce 9
+
+
+state 23
+	instruction_add : INSTR_ADD register COMMA register COMMA register .  (8)
+
+	.  reduce 8
+
+
+37 terminals, 7 nonterminals
+14 grammar rules, 24 states

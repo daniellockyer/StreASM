@@ -8,9 +8,9 @@
 }
 
 let digit = ['0'-'9']
-let digits = digit*
+let digits = digit+
 let alpha = ['a'-'z' 'A'-'Z']
-let iden = alpha (alpha | digit)*
+let iden = alpha digits+
 
 rule lexer_main = parse
     | "\n"  	{ incr line_num; lexer_main lexbuf }

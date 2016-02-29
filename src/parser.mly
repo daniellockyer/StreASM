@@ -25,17 +25,20 @@ parser_main
    	| EOF {}
 ;
 
-label: IDENTIFIER COLON {};
+label: register COLON {};
 
-register: IDENTIFIER {};
+register:
+	IDENTIFIER {}
+;
 
-instruction_add
-	: INSTR_ADD register COMMA register COMMA register { }
-   	| INSTR_ADD register COMMA register COMMA LITERAL { }
+value
+	: register { (* TODO: getValue *)}
+	| LITERAL {}
 ;
 
 instruction
-	: instruction_add { }
+	: INSTR_ADD register COMMA value COMMA value { }
+	| INSTR_ADD register COMMA value COMMA value { }
 /*	| instruction_sub
 	| instruction_mul
 	| instruction_div

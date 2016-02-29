@@ -4,7 +4,7 @@
     exception Syntax_error of string
 
     let line_num = ref 1
-    let syntax_error msg = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !line_num)))
+    let syntax_error msg lexbuf = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !line_num) ^ " with token \"" ^ (Lexing.lexeme lexbuf) ^ "\""))
 }
 
 let digit = ['0'-'9']
@@ -12,7 +12,7 @@ let digits = digit+
 let alpha = ['a'-'z' 'A'-'Z']
 let iden = alpha digits | alpha '[' alpha digits ']'
 let alphastring = alpha+
-let comment = ";" _*?
+let comment = ";"([^'\n']+)
 
 rule lexer_main = parse
     | ['\n' '\r'] { incr line_num; lexer_main lexbuf }
@@ -52,6 +52,6 @@ rule lexer_main = parse
     | "@END"	{ LABEL_END }
     | "@NEXT"	{ LABEL_NEXT }
     | alphastring as a { LABEL (a) }
-    | _         { syntax_error "Couldn't identify the token" }
+    | _         { syntax_error "Couldn't identify the token" lexbuf }
     | eof      	{ EOF }
 

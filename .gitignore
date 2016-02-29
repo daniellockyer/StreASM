@@ -3,6 +3,7 @@ src/main
 src/parser.ml
 src/parser.mli
 src/parser.output
+src/.depend
 *.annot
 *.cmo
 *.cma

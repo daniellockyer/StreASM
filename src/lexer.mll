@@ -10,7 +10,7 @@
 let digit = ['0'-'9']
 let digits = digit+
 let alpha = ['a'-'z' 'A'-'Z']
-let iden = alpha digits+
+let iden = alpha digits | alpha '[' alpha digits ']'
 let alphastring = alpha+
 let comment = ";" _*?
 
@@ -54,3 +54,4 @@ rule lexer_main = parse
     | alphastring as a { LABEL (a) }
     | _         { syntax_error "Couldn't identify the token" }
     | eof      	{ EOF }
+

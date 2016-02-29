@@ -6,6 +6,7 @@ let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.add regist
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 - val2);;
 
 let instr_mov (register: string) (value: int) = Hashtbl.add registers register value;;
+let instr_clr (register: string) = Hashtbl.add registers register 0;;
 
 let lookup (register: string) = 
     if Hashtbl.mem registers register 

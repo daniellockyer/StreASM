@@ -33,7 +33,7 @@ label
 
 register: IDENTIFIER { $1 };
 
-register_value: IDENTIFIER { (getValue $1) };
+register_value: IDENTIFIER { getValue $1 };
 
 value
     : register_value { $1 }
@@ -68,7 +68,7 @@ instruction
     | INSTR_CALL label { }
     | INSTR_RET {}
     | INSTR_MOV register COMMA value { instr_mov $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_CLR register {}
+    | INSTR_CLR register { instr_clr $2; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_BS register COMMA LITERAL {}
     | INSTR_BC register COMMA LITERAL {}
     | INSTR_BT register COMMA LITERAL COMMA label_branches COMMA label_branches {}

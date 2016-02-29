@@ -12,6 +12,7 @@
 %token EOF
 %token <int> LITERAL
 %token <string> IDENTIFIER
+%token <string> LABEL
 
 %start parser_main
 %type <unit> parser_main
@@ -25,44 +26,52 @@ parser_main
    	| EOF {}
 ;
 
-label: register COLON {};
+label
+	: LABEL {}
+	| LABEL COLON {}
+;
 
 register:
 	IDENTIFIER {}
 ;
 
 value
-	: register { (* TODO: getValue *)}
+	: register { (* TODO: getValue *) }
 	| LITERAL {}
+;
+
+label_branches
+	: LABEL {}
+	| LABEL_NEXT {}
+	| LABEL_END {}
 ;
 
 instruction
 	: INSTR_ADD register COMMA value COMMA value { }
-	| INSTR_ADD register COMMA value COMMA value { }
-/*	| instruction_sub
-	| instruction_mul
-	| instruction_div
-	| instruction_tstn
-	| instruction_tstz
-	| instruction_tste
-	| instruction_tstg
-	| instruction_tstge
-	| instruction_tstl
-	| instruction_tstle
-	| instruction_and
-	| instruction_or
-	| instruction_nor
-	| instruction_xor
-	| instruction_nano
-	| instruction_com
-	| instruction_jmp
-	| instruction_call
-	| instruction_ret
-	| instruction_mov
-	| instruction_clr
-	| instruction_bs
-	| instruction_bc
-	| instruction_bt
-	| instruction_def
-	| instruction_nxt*/
+	| INSTR_SUB register COMMA value COMMA value { }
+	| INSTR_MUL register COMMA value COMMA value { }
+	| INSTR_DIV register COMMA value COMMA value { }
+	| INSTR_TSTN register COMMA label_branches COMMA label_branches { }
+	| INSTR_TSTZ register COMMA label_branches COMMA label_branches { }
+	| INSTR_TSTE register COMMA register COMMA label_branches COMMA label_branches { }
+	| INSTR_TSTG register COMMA register COMMA label_branches COMMA label_branches { }
+	| INSTR_TSTGE register COMMA register COMMA label_branches COMMA label_branches { }
+	| INSTR_TSTL register COMMA register COMMA label_branches COMMA label_branches { }
+	| INSTR_TSTLE register COMMA register COMMA  label_branches COMMA label_branches { }
+	| INSTR_AND register COMMA value COMMA value { }
+	| INSTR_OR register COMMA value COMMA value { }
+	| INSTR_NOR register COMMA value COMMA value { }
+	| INSTR_XOR register COMMA value COMMA value { }
+	| INSTR_NAND register COMMA value COMMA value { }
+	| INSTR_COM register COMMA register { }
+	| INSTR_JMP label_branches { }
+	| INSTR_CALL label { }
+	| INSTR_RET {}
+	| INSTR_MOV register COMMA value {}
+	| INSTR_CLR register {}
+	| INSTR_BS register COMMA LITERAL {}
+	| INSTR_BC register	COMMA LITERAL {}
+	| INSTR_BT register COMMA LITERAL COMMA label_branches COMMA label_branches {}
+	| INSTR_DEF IDENTIFIER {}
+	| INSTR_NXT IDENTIFIER COMMA IDENTIFIER {}
 ;

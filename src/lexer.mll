@@ -11,6 +11,7 @@ let digit = ['0'-'9']
 let digits = digit+
 let alpha = ['a'-'z' 'A'-'Z']
 let iden = alpha digits+
+let alphastring = alpha+
 
 rule lexer_main = parse
     | "\n"  	{ incr line_num; lexer_main lexbuf }
@@ -48,5 +49,6 @@ rule lexer_main = parse
     | "NXT"		{ INSTR_NXT }
     | "@END"	{ LABEL_END }
     | "@NEXT"	{ LABEL_NEXT }
+    | alphastring as a { LABEL (a) }
     | _         { syntax_error "Couldn't identify the token" }
     | eof      	{ EOF }

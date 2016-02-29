@@ -33,6 +33,7 @@ type token =
   | EOF
   | LITERAL of (int)
   | IDENTIFIER of (string)
+  | LABEL of (string)
 
 val parser_main :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> unit

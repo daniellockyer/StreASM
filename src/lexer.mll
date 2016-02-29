@@ -1,9 +1,9 @@
 {
     open Parser
     open Arg
+    exception Syntax_error of string
 
     let line_num = ref 1
-    exception Syntax_error of string
     let syntax_error msg = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !line_num)))
 }
 
@@ -12,12 +12,14 @@ let digits = digit+
 let alpha = ['a'-'z' 'A'-'Z']
 let iden = alpha digits+
 let alphastring = alpha+
+let comment = ";" _*?
 
 rule lexer_main = parse
-    | "\n"  	{ incr line_num; lexer_main lexbuf }
-    | [' ' '\r' '\t'] { lexer_main lexbuf }
+    | ['\n' '\r'] { incr line_num; lexer_main lexbuf }
+    | [' ' '\t'] { lexer_main lexbuf }
     | digits as d { LITERAL (int_of_string d) }
     | iden as lxm { IDENTIFIER (lxm) }
+    | comment   { print_string "Comment"; print_newline(); lexer_main lexbuf }
     | ","       { COMMA }
     | ":"       { COLON }
     | "ADD"		{ INSTR_ADD }

@@ -31,13 +31,11 @@ label
 	| LABEL COLON {}
 ;
 
-register:
-	IDENTIFIER {}
-;
+register: IDENTIFIER { print_string $1; print_newline(); };
 
 value
 	: register { (* TODO: getValue *) }
-	| LITERAL {}
+	| LITERAL { print_int $1; print_newline();}
 ;
 
 label_branches
@@ -72,6 +70,6 @@ instruction
 	| INSTR_BS register COMMA LITERAL {}
 	| INSTR_BC register	COMMA LITERAL {}
 	| INSTR_BT register COMMA LITERAL COMMA label_branches COMMA label_branches {}
-	| INSTR_DEF IDENTIFIER {}
+	| INSTR_DEF IDENTIFIER { print_string $2; print_newline(); }
 	| INSTR_NXT IDENTIFIER COMMA IDENTIFIER {}
 ;

@@ -353,40 +353,40 @@ let yyact = [|
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
-# 35 "parser.mly"
-            ()
+# 34 "parser.mly"
+                     ( print_string _1; print_newline(); )
 # 359 "parser.ml"
                : 'register))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'register) in
     Obj.repr(
-# 39 "parser.mly"
+# 37 "parser.mly"
             ( (* TODO: getValue *) )
 # 366 "parser.ml"
                : 'value))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
-# 40 "parser.mly"
-           ()
+# 38 "parser.mly"
+           ( print_int _1; print_newline();)
 # 373 "parser.ml"
                : 'value))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
-# 44 "parser.mly"
+# 42 "parser.mly"
          ()
 # 380 "parser.ml"
                : 'label_branches))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 45 "parser.mly"
+# 43 "parser.mly"
               ()
 # 386 "parser.ml"
                : 'label_branches))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 46 "parser.mly"
+# 44 "parser.mly"
              ()
 # 392 "parser.ml"
                : 'label_branches))
@@ -395,7 +395,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'value) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 50 "parser.mly"
+# 48 "parser.mly"
                                               ( )
 # 401 "parser.ml"
                : 'instruction))
@@ -404,7 +404,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'value) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 51 "parser.mly"
+# 49 "parser.mly"
                                               ( )
 # 410 "parser.ml"
                : 'instruction))
@@ -413,7 +413,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'value) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 52 "parser.mly"
+# 50 "parser.mly"
                                               ( )
 # 419 "parser.ml"
                : 'instruction))
@@ -422,7 +422,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'value) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 53 "parser.mly"
+# 51 "parser.mly"
                                               ( )
 # 428 "parser.ml"
                : 'instruction))
@@ -431,7 +431,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'label_branches) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'label_branches) in
     Obj.repr(
-# 54 "parser.mly"
+# 52 "parser.mly"
                                                                  ( )
 # 437 "parser.ml"
                : 'instruction))
@@ -440,7 +440,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'label_branches) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'label_branches) in
     Obj.repr(
-# 55 "parser.mly"
+# 53 "parser.mly"
                                                                  ( )
 # 446 "parser.ml"
                : 'instruction))
@@ -450,7 +450,7 @@ let yyact = [|
     let _6 = (Parsing.peek_val __caml_parser_env 2 : 'label_branches) in
     let _8 = (Parsing.peek_val __caml_parser_env 0 : 'label_branches) in
     Obj.repr(
-# 56 "parser.mly"
+# 54 "parser.mly"
                                                                                 ( )
 # 456 "parser.ml"
                : 'instruction))
@@ -460,7 +460,7 @@ let yyact = [|
     let _6 = (Parsing.peek_val __caml_parser_env 2 : 'label_branches) in
     let _8 = (Parsing.peek_val __caml_parser_env 0 : 'label_branches) in
     Obj.repr(
-# 57 "parser.mly"
+# 55 "parser.mly"
                                                                                 ( )
 # 466 "parser.ml"
                : 'instruction))
@@ -470,7 +470,7 @@ let yyact = [|
     let _6 = (Parsing.peek_val __caml_parser_env 2 : 'label_branches) in
     let _8 = (Parsing.peek_val __caml_parser_env 0 : 'label_branches) in
     Obj.repr(
-# 58 "parser.mly"
+# 56 "parser.mly"
                                                                                  ( )
 # 476 "parser.ml"
                : 'instruction))
@@ -480,7 +480,7 @@ let yyact = [|
     let _6 = (Parsing.peek_val __caml_parser_env 2 : 'label_branches) in
     let _8 = (Parsing.peek_val __caml_parser_env 0 : 'label_branches) in
     Obj.repr(
-# 59 "parser.mly"
+# 57 "parser.mly"
                                                                                 ( )
 # 486 "parser.ml"
                : 'instruction))
@@ -490,7 +490,7 @@ let yyact = [|
     let _6 = (Parsing.peek_val __caml_parser_env 2 : 'label_branches) in
     let _8 = (Parsing.peek_val __caml_parser_env 0 : 'label_branches) in
     Obj.repr(
-# 60 "parser.mly"
+# 58 "parser.mly"
                                                                                   ( )
 # 496 "parser.ml"
                : 'instruction))
@@ -499,7 +499,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'value) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 61 "parser.mly"
+# 59 "parser.mly"
                                               ( )
 # 505 "parser.ml"
                : 'instruction))
@@ -508,7 +508,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'value) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 62 "parser.mly"
+# 60 "parser.mly"
                                              ( )
 # 514 "parser.ml"
                : 'instruction))
@@ -517,7 +517,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'value) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 63 "parser.mly"
+# 61 "parser.mly"
                                               ( )
 # 523 "parser.ml"
                : 'instruction))
@@ -526,7 +526,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'value) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 64 "parser.mly"
+# 62 "parser.mly"
                                               ( )
 # 532 "parser.ml"
                : 'instruction))
@@ -535,7 +535,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 2 : 'value) in
     let _6 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 65 "parser.mly"
+# 63 "parser.mly"
                                                ( )
 # 541 "parser.ml"
                : 'instruction))
@@ -543,27 +543,27 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 2 : 'register) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'register) in
     Obj.repr(
-# 66 "parser.mly"
+# 64 "parser.mly"
                                      ( )
 # 549 "parser.ml"
                : 'instruction))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'label_branches) in
     Obj.repr(
-# 67 "parser.mly"
+# 65 "parser.mly"
                             ( )
 # 556 "parser.ml"
                : 'instruction))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'label) in
     Obj.repr(
-# 68 "parser.mly"
+# 66 "parser.mly"
                     ( )
 # 563 "parser.ml"
                : 'instruction))
 ; (fun __caml_parser_env ->
     Obj.repr(
-# 69 "parser.mly"
+# 67 "parser.mly"
              ()
 # 569 "parser.ml"
                : 'instruction))
@@ -571,14 +571,14 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 2 : 'register) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : 'value) in
     Obj.repr(
-# 70 "parser.mly"
+# 68 "parser.mly"
                                   ()
 # 577 "parser.ml"
                : 'instruction))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'register) in
     Obj.repr(
-# 71 "parser.mly"
+# 69 "parser.mly"
                       ()
 # 584 "parser.ml"
                : 'instruction))
@@ -586,7 +586,7 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 2 : 'register) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
-# 72 "parser.mly"
+# 70 "parser.mly"
                                    ()
 # 592 "parser.ml"
                : 'instruction))
@@ -594,7 +594,7 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 2 : 'register) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
-# 73 "parser.mly"
+# 71 "parser.mly"
                                    ()
 # 600 "parser.ml"
                : 'instruction))
@@ -604,22 +604,22 @@ let yyact = [|
     let _6 = (Parsing.peek_val __caml_parser_env 2 : 'label_branches) in
     let _8 = (Parsing.peek_val __caml_parser_env 0 : 'label_branches) in
     Obj.repr(
-# 74 "parser.mly"
+# 72 "parser.mly"
                                                                              ()
 # 610 "parser.ml"
                : 'instruction))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
-# 75 "parser.mly"
-                        ()
+# 73 "parser.mly"
+                        ( print_string _2; print_newline(); )
 # 617 "parser.ml"
                : 'instruction))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 2 : string) in
     let _4 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
-# 76 "parser.mly"
+# 74 "parser.mly"
                                          ()
 # 625 "parser.ml"
                : 'instruction))

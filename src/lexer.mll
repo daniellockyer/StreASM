@@ -19,7 +19,7 @@ rule lexer_main = parse
     | [' ' '\t'] { lexer_main lexbuf }
     | digits as d { LITERAL (int_of_string d) }
     | iden as lxm { IDENTIFIER (lxm) }
-    | comment   { print_string "Comment"; print_newline(); lexer_main lexbuf }
+    | comment   { lexer_main lexbuf }
     | ","       { COMMA }
     | ":"       { COLON }
     | "ADD"		{ INSTR_ADD }

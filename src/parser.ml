@@ -354,21 +354,21 @@ let yyact = [|
     let _1 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
 # 34 "parser.mly"
-                     ( print_string _1; print_newline(); )
+                     ( getValue _1 )
 # 359 "parser.ml"
                : 'register))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : 'register) in
     Obj.repr(
 # 37 "parser.mly"
-            ( (* TODO: getValue *) )
+            (  )
 # 366 "parser.ml"
                : 'value))
 ; (fun __caml_parser_env ->
     let _1 = (Parsing.peek_val __caml_parser_env 0 : int) in
     Obj.repr(
 # 38 "parser.mly"
-           ( print_int _1; print_newline();)
+           ( )
 # 373 "parser.ml"
                : 'value))
 ; (fun __caml_parser_env ->
@@ -612,7 +612,7 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : string) in
     Obj.repr(
 # 73 "parser.mly"
-                        ( print_string _2; print_newline(); )
+                        ( )
 # 617 "parser.ml"
                : 'instruction))
 ; (fun __caml_parser_env ->

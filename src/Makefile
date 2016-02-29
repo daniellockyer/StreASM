@@ -13,7 +13,7 @@
 
 # These are the object files needed to rebuild the main executable file
 #
-OBJS = parser.cmo lexer.cmo Streasm.cmo main.cmo 
+OBJS = Streasm.cmo parser.cmo lexer.cmo main.cmo 
 
 COMMONOBJS = str.cma
 

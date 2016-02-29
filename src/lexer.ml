@@ -1106,7 +1106,7 @@ let
 
   | 4 ->
 # 22 "lexer.mll"
-                ( print_string "Comment"; print_newline(); lexer_main lexbuf )
+                ( lexer_main lexbuf )
 # 1111 "lexer.ml"
 
   | 5 ->
@@ -1284,8 +1284,7 @@ let
                 ( EOF )
 # 1286 "lexer.ml"
 
-  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; 
-      __ocaml_lex_lexer_main_rec lexbuf __ocaml_lex_state
+  | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf; __ocaml_lex_lexer_main_rec lexbuf __ocaml_lex_state
 
 ;;
 

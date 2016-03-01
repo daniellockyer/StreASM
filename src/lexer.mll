@@ -1,20 +1,22 @@
 {
-    open Parser
     open Arg
     open Lexing
     open Hashtbl
+    open Parser
     open Streasm
     exception Syntax_error of string
+    
+    let instructionPointer = 0;;
 
-    let syntax_error msg lexbuf = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !instructionPointer) ^ " with token \"" ^ (Lexing.lexeme lexbuf) ^ "\""));;
+    let syntax_error msg lexbuf = raise (Syntax_error (msg ^ " on line " ^ (string_of_int instructionPointer) ^ " with token \"" ^ (Lexing.lexeme lexbuf) ^ "\""));;
 
     let update_loc lexbuf =
         begin
-            print_string "Updating location to "; print_int !instructionPointer; print_newline();
+            print_string "Updating location to "; print_int instructionPointer; print_newline();
          (*  lexbuf.Lexing.lex_curr_pos <- !instructionPointer; *)
             lexbuf.Lexing.lex_curr_p <-
                 { lexbuf.Lexing.lex_curr_p with 
-                    pos_lnum = !instructionPointer; 
+                    pos_lnum = instructionPointer; 
                     pos_bol = 0;
                     pos_cnum = 0;
                 };
@@ -29,7 +31,7 @@ let alphastring = alpha+
 let comment = ";"([^'\n']+)
 
 rule lexer_main = parse
-    | ['\n' '\r'] { incr instructionPointer; update_loc lexbuf; lexer_main lexbuf; }
+    | ['\n' '\r'] { incr (ref instructionPointer); update_loc lexbuf; lexer_main lexbuf; }
     | [' ' '\t'] { lexer_main lexbuf }
     | digits as d { LITERAL (int_of_string d) }
     | iden as lxm { IDENTIFIER (lxm) }
@@ -53,7 +55,7 @@ rule lexer_main = parse
     | "XOR"		{ INSTR_XOR }
     | "NAND"	{ INSTR_NAND }
     | "COM"		{ INSTR_COM }
-    | "JMP"		{ INSTR_JMP (lexer_main) }
+    | "JMP"		{ Streasm.set_lexbuf lexbuf; INSTR_JMP}
     | "CALL"	{ INSTR_CALL }
     | "RET"		{ INSTR_RET }
     | "MOV"		{ INSTR_MOV }
@@ -65,6 +67,6 @@ rule lexer_main = parse
     | "NXT"		{ INSTR_NXT }
     | "@END" as a { LABEL_END(a) }
     | "@NEXT" as a { LABEL_NEXT(a) }
-    | alphastring as a { update_positions a lexbuf; LABEL (a) }
+    | alphastring as a { LABEL (a) }
     | _         { syntax_error "Couldn't identify the token" lexbuf }
     | eof      	{ print_endline "EOF"; EOF }

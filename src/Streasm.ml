@@ -3,7 +3,11 @@ open Lexing;;
 
 let lex = Lexing.from_string "";;
 
-let set_lexbuf (lexer: lexbuf) = ref lex := lexer;; 
+let set_lexbuf (lexer: lexbuf) =
+    begin
+        print_endline "aaaaaaa";
+        ref lex := lexer;
+    end;;
 
 let registers = Hashtbl.create 5;;
 
@@ -16,17 +20,17 @@ let lookup (register: string) =
     ;;
 
 let getValue (register: string) =
-        if Str.string_match (Str.regexp "[a-zA-Z]+[0-9]+") register 0 
+    if Str.string_match (Str.regexp "[a-zA-Z]+[0-9]+") register 0 
+    then
+        lookup register
+    else 
+        if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[0-9]+\\)\\]") register 0 (* match for example r[r1] *)
         then
-            lookup register
-        else 
-            if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[0-9]+\\)\\]") register 0 (* match for example r[r1] *)
-            then
-                let outer = Str.matched_group 1 register in
-                    let inner = Str.matched_group 2 register in
-                        lookup (outer ^ (string_of_int (lookup inner))) 
-            else
-                0        (* return zero on fail for now: Would be nice to fail*)
+            let outer = Str.matched_group 1 register in
+                let inner = Str.matched_group 2 register in
+                    lookup (outer ^ (string_of_int (lookup inner))) 
+        else
+            0        (* return zero on fail for now: Would be nice to fail*)
 
 let rec find_label (location: string) (returned: string) = 
     if returned = location
@@ -49,7 +53,7 @@ let instr_nor (destination: string) (val1: int) (val2: int) = Hashtbl.add regist
 let instr_com (destination: string) (value: int) = Hashtbl.add registers destination (lnot value);;
 
 let instr_jmp (location: string) = 
-    begin Lexing.flush_input lex; find_label location (Lexing.lexeme lex) end;;
+    begin print_string "hello"; Lexing.flush_input lex; find_label location (Lexing.lexeme lex); end;;
 
 let instr_mov (register: string) (value: int) = Hashtbl.add registers register value;;
 let instr_clr (register: string) = Hashtbl.add registers register 0;;

@@ -49,8 +49,8 @@ label_branches
 instruction
     : INSTR_ADD register COMMA value COMMA value { instr_add $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_SUB register COMMA value COMMA value { instr_sub $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_MUL register COMMA value COMMA value { }
-    | INSTR_DIV register COMMA value COMMA value { }
+    | INSTR_MUL register COMMA value COMMA value { instr_mul $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
+    | INSTR_DIV register COMMA value COMMA value { instr_div $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_TSTN register COMMA label_branches COMMA label_branches { }
     | INSTR_TSTZ register COMMA label_branches COMMA label_branches { }
     | INSTR_TSTE register COMMA register COMMA label_branches COMMA label_branches { }

@@ -3,7 +3,7 @@ open Hashtbl;;
 let registers = Hashtbl.create 5;;
 
 let lookup (register: string) = 
-    if Hashtbl.mem registers register 
+    if Hashtbl.mem registers register
     then
         Hashtbl.find registers register
     else
@@ -25,6 +25,8 @@ let getValue (register: string) =
 
 let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 + val2);;
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 - val2);;
+let instr_mul (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 * val2);;
+let instr_div (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 / val2);;
 
 let instr_and (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 land val2);;
 let instr_nand (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (lnot (val1 land val2));;

@@ -14,5 +14,3 @@ main:
 	NXT stdout, o
 	MOV r2, r1
 	TSTN r2, main, @END
-
-	bs r[1], 0

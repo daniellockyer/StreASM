@@ -5,8 +5,7 @@ let lex = Lexing.from_string "";;
 
 let set_lexbuf (lexer: lexbuf) =
     begin
-        print_endline "aaaaaaa";
-        ref lex := lexer;
+        ref lex := lexer
     end;;
 
 let registers = Hashtbl.create 5;;
@@ -32,13 +31,16 @@ let getValue (register: string) =
         else
             0        (* return zero on fail for now: Would be nice to fail*)
 
-let rec find_label (location: string) (returned: string) = 
+let rec find_label (location: string) (returned: string) =
+    (print_string (location ^ " " ^ returned ^ "\n");
+    lex.Lexing.lex_curr_pos <- lex.Lexing.lex_curr_pos + 1;
+    print_int lex.Lexing.lex_curr_pos;
     if returned = location
     then
         print_string "reached label?"   (*What do?*)
     else
         Lexing.new_line lex;
-        find_label location (Lexing.lexeme lex);;
+        find_label location (Lexing.lexeme lex));;
 
 let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 + val2);;
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 - val2);;

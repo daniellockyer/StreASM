@@ -1,10 +1,24 @@
 {
     open Parser
     open Arg
+    open Lexing
+    open Hashtbl
+    open Streasm
     exception Syntax_error of string
 
-    let line_num = ref 1
-    let syntax_error msg lexbuf = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !line_num) ^ " with token \"" ^ (Lexing.lexeme lexbuf) ^ "\""))
+    let syntax_error msg lexbuf = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !instructionPointer) ^ " with token \"" ^ (Lexing.lexeme lexbuf) ^ "\""));;
+
+    let update_loc lexbuf =
+        begin
+            print_string "Updating location to "; print_int !instructionPointer; print_newline();
+         (*  lexbuf.Lexing.lex_curr_pos <- !instructionPointer; *)
+            lexbuf.Lexing.lex_curr_p <-
+                { lexbuf.Lexing.lex_curr_p with 
+                    pos_lnum = !instructionPointer; 
+                    pos_bol = 0;
+                    pos_cnum = 0;
+                };
+        end;;
 }
 
 let digit = ['0'-'9']
@@ -15,7 +29,7 @@ let alphastring = alpha+
 let comment = ";"([^'\n']+)
 
 rule lexer_main = parse
-    | ['\n' '\r'] { incr line_num; lexer_main lexbuf }
+    | ['\n' '\r'] { incr instructionPointer; update_loc lexbuf; lexer_main lexbuf; }
     | [' ' '\t'] { lexer_main lexbuf }
     | digits as d { LITERAL (int_of_string d) }
     | iden as lxm { IDENTIFIER (lxm) }
@@ -49,9 +63,8 @@ rule lexer_main = parse
     | "BT"		{ INSTR_BT }
     | "DEF"		{ INSTR_DEF }
     | "NXT"		{ INSTR_NXT }
-    | "@END"	{ LABEL_END }
-    | "@NEXT"	{ LABEL_NEXT }
-    | alphastring as a { LABEL (a) }
+    | "@END" as a { LABEL_END(a) }
+    | "@NEXT" as a { LABEL_NEXT(a) }
+    | alphastring as a { update_positions a lexbuf; LABEL (a) }
     | _         { syntax_error "Couldn't identify the token" lexbuf }
-    | eof      	{ EOF }
-
+    | eof      	{ print_endline "EOF"; EOF }

@@ -1,4 +1,14 @@
 open Hashtbl;;
+open Lexing;;
+
+let instructionPointer = ref 1;;
+
+let label_positions = Hashtbl.create 4;;
+let update_positions label lexbuf = 
+    begin
+        print_string "Adding label to hashtable\n";
+        Hashtbl.add label_positions label lexbuf.Lexing.lex_curr_p.pos_lnum;
+    end;;
 
 let registers = Hashtbl.create 5;;
 
@@ -15,13 +25,13 @@ let getValue (register: string) =
         then
             lookup register
         else 
-                if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[0-9]+\\)\\]") register 0 (* match for example r[r1] *)
-                then
-                    let outer = Str.matched_group 1 register in
-                        let inner = Str.matched_group 2 register in
-                            lookup (outer ^ (string_of_int (lookup inner))) 
-                else
-                    0        (* return zero on fail for now: Would be nice to fail*)
+            if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[0-9]+\\)\\]") register 0 (* match for example r[r1] *)
+            then
+                let outer = Str.matched_group 1 register in
+                    let inner = Str.matched_group 2 register in
+                        lookup (outer ^ (string_of_int (lookup inner))) 
+            else
+                0        (* return zero on fail for now: Would be nice to fail*)
 
 let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 + val2);;
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 - val2);;
@@ -34,6 +44,15 @@ let instr_or (destination: string) (val1: int) (val2: int) = Hashtbl.add registe
 let instr_xor (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 lxor val2);;
 let instr_nor (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (lnot (val1 lor val2));;
 let instr_com (destination: string) (value: int) = Hashtbl.add registers destination (lnot value);;
+
+let instr_jmp (location: string) = 
+    if Hashtbl.mem label_positions location 
+    then
+        begin
+            instructionPointer := Hashtbl.find label_positions location;            
+            print_string "Due to JMP, setting IP to "; print_int !instructionPointer; print_newline();
+        end
+    else ();;
 
 let instr_mov (register: string) (value: int) = Hashtbl.add registers register value;;
 let instr_clr (register: string) = Hashtbl.add registers register 0;;

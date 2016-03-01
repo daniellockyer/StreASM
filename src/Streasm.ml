@@ -24,6 +24,14 @@ let getValue (register: string) =
             else
                 0        (* return zero on fail for now: Would be nice to fail*)
 
+let rec find_label (lexbuf: lexbuf) (location: string) (returned: string) = 
+    if returned = location
+    then
+        print_string "reached label?"   (*What do?*)
+    else
+        Lexing.new_line lexbuf;
+        find_label lexbuf location (Lexing.lexeme lexbuf);;
+
 let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 + val2);;
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 - val2);;
 let instr_mul (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 * val2);;
@@ -36,15 +44,8 @@ let instr_xor (destination: string) (val1: int) (val2: int) = Hashtbl.add regist
 let instr_nor (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (lnot (val1 lor val2));;
 let instr_com (destination: string) (value: int) = Hashtbl.add registers destination (lnot value);;
 
-let instr_jmp (location: string) = begin lexbuf.Lexing.flush_input(); find_label location lexbuf.Lexing.lexeme(); end;;
-
-let find_label (location: string) (returned: string) = 
-        if returned = location
-            then
-                print_string "reached label?"   (*What do?*)
-            else
-                lexbuf.Lexing.next_line();
-                find_label location lexbuf.Lexing.lexeme()
+let instr_jmp (location: string) (lexbuf: lexbuf) = 
+    begin Lexing.flush_input lexbuf; find_label lexbuf location (Lexing.lexeme lexbuf) end;;
 
 let instr_mov (register: string) (value: int) = Hashtbl.add registers register value;;
 let instr_clr (register: string) = Hashtbl.add registers register 0;;

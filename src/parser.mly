@@ -1,5 +1,6 @@
 %{
     open Streasm
+    open Lexing
     open Printf
     open Lexer
 %}
@@ -65,7 +66,7 @@ instruction
     | INSTR_XOR register COMMA value COMMA value { instr_xor $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_NAND register COMMA value COMMA value { instr_nand $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_COM register COMMA value { instr_com $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_JMP label_branches { instr_jmp $2; }
+    | INSTR_JMP label_branches { instr_jmp $1 $2; }
     | INSTR_CALL label { }
     | INSTR_RET {}
     | INSTR_MOV register COMMA value { instr_mov $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }

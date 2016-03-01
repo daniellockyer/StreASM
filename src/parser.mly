@@ -11,6 +11,7 @@
 %token INSTR_ADD INSTR_SUB INSTR_MUL INSTR_DIV
 %token COMMA COLON
 %token EOF
+%token <lexbuf> INSTR_JMP
 %token <int> LITERAL
 %token <string> IDENTIFIER
 %token <string> LABEL LABEL_NEXT LABEL_END

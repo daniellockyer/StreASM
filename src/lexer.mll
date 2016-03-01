@@ -53,7 +53,7 @@ rule lexer_main = parse
     | "XOR"		{ INSTR_XOR }
     | "NAND"	{ INSTR_NAND }
     | "COM"		{ INSTR_COM }
-    | "JMP"		{ INSTR_JMP }
+    | "JMP"		{ INSTR_JMP (lexer_main) }
     | "CALL"	{ INSTR_CALL }
     | "RET"		{ INSTR_RET }
     | "MOV"		{ INSTR_MOV }

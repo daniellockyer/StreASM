@@ -1,15 +1,6 @@
 open Hashtbl;;
 open Lexing;;
 
-let instructionPointer = ref 1;;
-
-let label_positions = Hashtbl.create 4;;
-let update_positions label lexbuf = 
-    begin
-        print_string "Adding label to hashtable\n";
-        Hashtbl.add label_positions label lexbuf.Lexing.lex_curr_p.pos_lnum;
-    end;;
-
 let registers = Hashtbl.create 5;;
 
 let lookup (register: string) = 
@@ -45,14 +36,15 @@ let instr_xor (destination: string) (val1: int) (val2: int) = Hashtbl.add regist
 let instr_nor (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (lnot (val1 lor val2));;
 let instr_com (destination: string) (value: int) = Hashtbl.add registers destination (lnot value);;
 
-let instr_jmp (location: string) = 
-    if Hashtbl.mem label_positions location 
-    then
-        begin
-            instructionPointer := Hashtbl.find label_positions location;            
-            print_string "Due to JMP, setting IP to "; print_int !instructionPointer; print_newline();
-        end
-    else ();;
+let instr_jmp (location: string) = begin lexbuf.Lexing.flush_input(); find_label location lexbuf.Lexing.lexeme(); end;;
+
+let find_label (location: string) (returned: string) = 
+        if returned = location
+            then
+                print_string "reached label?"   (*What do?*)
+            else
+                lexbuf.Lexing.next_line();
+                find_label location lexbuf.Lexing.lexeme()
 
 let instr_mov (register: string) (value: int) = Hashtbl.add registers register value;;
 let instr_clr (register: string) = Hashtbl.add registers register 0;;

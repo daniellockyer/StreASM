@@ -58,12 +58,12 @@ instruction
     | INSTR_TSTGE register COMMA register COMMA label_branches COMMA label_branches { }
     | INSTR_TSTL register COMMA register COMMA label_branches COMMA label_branches { }
     | INSTR_TSTLE register COMMA register COMMA  label_branches COMMA label_branches { }
-    | INSTR_AND register COMMA value COMMA value { }
-    | INSTR_OR register COMMA value COMMA value { }
+    | INSTR_AND register COMMA value COMMA value { instr_and $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
+    | INSTR_OR register COMMA value COMMA value { instr_or $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_NOR register COMMA value COMMA value { }
-    | INSTR_XOR register COMMA value COMMA value { }
+    | INSTR_XOR register COMMA value COMMA value { instr_xor $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_NAND register COMMA value COMMA value { }
-    | INSTR_COM register COMMA register { }
+    | INSTR_COM register COMMA register_value { instr_com $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_JMP label_branches { }
     | INSTR_CALL label { }
     | INSTR_RET {}

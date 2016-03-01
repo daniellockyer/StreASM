@@ -5,6 +5,11 @@ let registers = Hashtbl.create 5;;
 let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 + val2);;
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 - val2);;
 
+let instr_and (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 land val2);;
+let instr_or (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 lor val2);;
+let instr_xor (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 lxor val2);;
+let instr_com (destination: string) (value: int) = Hashtbl.add registers destination (lnot value);;
+
 let instr_mov (register: string) (value: int) = Hashtbl.add registers register value;;
 let instr_clr (register: string) = Hashtbl.add registers register 0;;
 

@@ -60,7 +60,6 @@ rule lexer_main = parse
     | "BS"		{ INSTR_BS }
     | "BC"		{ INSTR_BC }
     | "BT"		{ INSTR_BT }
-    | "DEF"		{ INSTR_DEF }
     | "NXT"		{ INSTR_NXT }
     | "@END" as a { LABEL_END(a) }
     | "@NEXT" as a { LABEL_NEXT(a) }

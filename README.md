@@ -31,7 +31,6 @@
 | BC reg, bit | |
 | BT reg, bit, if1, if0 | |
 |---|---|
-| DEF name | |
 | NXT name, name | |
 | @END | |
 | @NEXT | PC+1 |

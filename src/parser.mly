@@ -2,7 +2,7 @@
     open Streasm
     open Printf
 %}
-%token INSTR_DEF INSTR_NXT 
+%token INSTR_NXT 
 %token INSTR_JMP INSTR_CALL INSTR_RET INSTR_MOV INSTR_CLR INSTR_BS INSTR_BC INSTR_BT 
 %token INSTR_AND INSTR_OR INSTR_NOR INSTR_XOR INSTR_NAND INSTR_COM 
 %token INSTR_TSTN INSTR_TSTZ INSTR_TSTE INSTR_TSTG INSTR_TSTGE INSTR_TSTL INSTR_TSTLE
@@ -74,6 +74,5 @@ instruction
     | INSTR_BS register COMMA LITERAL { instr_bs $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_BC register COMMA LITERAL { instr_bc $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
     | INSTR_BT register COMMA LITERAL COMMA label_ref COMMA label_ref {}
-    | INSTR_DEF IDENTIFIER { }
     | INSTR_NXT IDENTIFIER COMMA IDENTIFIER {}
 ;

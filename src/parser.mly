@@ -49,10 +49,10 @@ label
 ;
 
 instruction
-    : INSTR_ADD register COMMA value COMMA value { instr_add $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_SUB register COMMA value COMMA value { instr_sub $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_MUL register COMMA value COMMA value { instr_mul $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_DIV register COMMA value COMMA value { instr_div $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
+    : INSTR_ADD register COMMA value COMMA value { instr_add $2 $4 $6; print_int (getValue $2); print_newline(); }
+    | INSTR_SUB register COMMA value COMMA value { instr_sub $2 $4 $6; print_int (getValue $2); print_newline(); }
+    | INSTR_MUL register COMMA value COMMA value { instr_mul $2 $4 $6; print_int (getValue $2); print_newline(); }
+    | INSTR_DIV register COMMA value COMMA value { instr_div $2 $4 $6; print_int (getValue $2); print_newline(); }
     | INSTR_TSTN register COMMA label_ref COMMA label_ref { }
     | INSTR_TSTZ register COMMA label_ref COMMA label_ref { }
     | INSTR_TSTE register COMMA register COMMA label_ref COMMA label_ref { }
@@ -60,19 +60,19 @@ instruction
     | INSTR_TSTGE register COMMA register COMMA label_ref COMMA label_ref { }
     | INSTR_TSTL register COMMA register COMMA label_ref COMMA label_ref { }
     | INSTR_TSTLE register COMMA register COMMA  label_ref COMMA label_ref { }
-    | INSTR_AND register COMMA value COMMA value { instr_and $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_OR register COMMA value COMMA value { instr_or $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_NOR register COMMA value COMMA value { instr_nor $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_XOR register COMMA value COMMA value { instr_xor $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_NAND register COMMA value COMMA value { instr_nand $2 $4 $6; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_COM register COMMA value { instr_com $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_JMP label { instr_jmp $2; }
+    | INSTR_AND register COMMA value COMMA value { instr_and $2 $4 $6; print_int (getValue $2); print_newline(); }
+    | INSTR_OR register COMMA value COMMA value { instr_or $2 $4 $6; print_int (getValue $2); print_newline(); }
+    | INSTR_NOR register COMMA value COMMA value { instr_nor $2 $4 $6; print_int (getValue $2); print_newline(); }
+    | INSTR_XOR register COMMA value COMMA value { instr_xor $2 $4 $6; print_int (getValue $2); print_newline(); }
+    | INSTR_NAND register COMMA value COMMA value { instr_nand $2 $4 $6; print_int (getValue $2); print_newline(); }
+    | INSTR_COM register COMMA value { instr_com $2 $4; print_int (getValue $2); print_newline(); }
+    | INSTR_JMP label { }
     | INSTR_CALL label { }
     | INSTR_RET {}
-    | INSTR_MOV register COMMA value { instr_mov $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_CLR register { instr_clr $2; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_BS register COMMA LITERAL { instr_bs $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
-    | INSTR_BC register COMMA LITERAL { instr_bc $2 $4; print_string (string_of_int (getValue $2)); print_newline(); }
+    | INSTR_MOV register COMMA value { instr_mov $2 $4; print_int (getValue $2); print_newline(); }
+    | INSTR_CLR register { instr_clr $2; print_int (getValue $2); print_newline(); }
+    | INSTR_BS register COMMA LITERAL { instr_bs $2 $4; print_int (getValue $2); print_newline(); }
+    | INSTR_BC register COMMA LITERAL { instr_bc $2 $4; print_int (getValue $2); print_newline(); }
     | INSTR_BT register COMMA LITERAL COMMA label_ref COMMA label_ref {}
     | INSTR_NXT IDENTIFIER COMMA IDENTIFIER {}
 ;

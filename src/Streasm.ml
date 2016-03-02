@@ -1,13 +1,6 @@
 open Hashtbl;;
 open Lexing;;
 
-let lex = Lexing.from_string "";;
-
-let set_lexbuf (lexer: lexbuf) =
-    begin
-        ref lex := lexer
-    end;;
-
 let registers = Hashtbl.create 5;;
 
 let lookup (register: string) = 
@@ -31,7 +24,7 @@ let getValue (register: string) =
         else
             0        (* return zero on fail for now: Would be nice to fail*)
 
-let rec find_label (location: string) (returned: string) =
+(*let rec find_label (location: string) (returned: string) =
     (print_string (location ^ " " ^ returned ^ "\n");
     lex.Lexing.lex_curr_pos <- lex.Lexing.lex_curr_pos + 1;
     print_int lex.Lexing.lex_curr_pos;
@@ -40,7 +33,7 @@ let rec find_label (location: string) (returned: string) =
         print_string "reached label?"   (*What do?*)
     else
         Lexing.new_line lex;
-        find_label location (Lexing.lexeme lex));;
+        find_label location (Lexing.lexeme lex));;*)
 
 let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 + val2);;
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 - val2);;
@@ -54,8 +47,8 @@ let instr_xor (destination: string) (val1: int) (val2: int) = Hashtbl.add regist
 let instr_nor (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (lnot (val1 lor val2));;
 let instr_com (destination: string) (value: int) = Hashtbl.add registers destination (lnot value);;
 
-let instr_jmp (location: string) = 
-    begin print_string "hello"; Lexing.flush_input lex; find_label location (Lexing.lexeme lex); end;;
+(*let instr_jmp (location: string) = 
+    begin print_string "hello"; Lexing.flush_input lex; find_label location (Lexing.lexeme lex); end;;*)
 
 let instr_mov (register: string) (value: int) = Hashtbl.add registers register value;;
 let instr_clr (register: string) = Hashtbl.add registers register 0;;

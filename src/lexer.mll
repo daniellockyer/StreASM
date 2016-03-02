@@ -6,18 +6,7 @@
     exception Syntax_error of string
     
     let instructionPointer = ref 1;;
-
     let syntax_error msg lexbuf = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !instructionPointer) ^ " with token \"" ^ (Lexing.lexeme lexbuf) ^ "\""));;
-
-    let update_loc lexbuf =
-        begin
-            print_string "Updating location to "; print_int !instructionPointer; print_newline();
-          (* lexbuf.Lexing.lex_curr_pos <- !instructionPointer; 
-            lexbuf.Lexing.lex_curr_p <-
-                { lexbuf.Lexing.lex_curr_p with 
-                    pos_lnum = !instructionPointer; 
-                };*)
-        end;;
 }
 
 let digit = ['0'-'9']
@@ -28,7 +17,7 @@ let alphastring = alpha+
 let comment = ";"([^'\n']+)
 
 rule lexer_main = parse
-    | ['\n' '\r'] { incr instructionPointer; update_loc lexbuf; lexer_main lexbuf; }
+    | ['\n' '\r'] { incr instructionPointer; lexer_main lexbuf; }
     | [' ' '\t'] { lexer_main lexbuf }
     | digits as d { LITERAL (int_of_string d) }
     | iden as lxm { IDENTIFIER (lxm) }
@@ -52,7 +41,7 @@ rule lexer_main = parse
     | "XOR"		{ INSTR_XOR }
     | "NAND"	{ INSTR_NAND }
     | "COM"		{ INSTR_COM }
-    | "JMP"     { Streasm.set_lexbuf lexbuf; INSTR_JMP }
+    | "JMP"     { INSTR_JMP }
     | "CALL"	{ INSTR_CALL }
     | "RET"		{ INSTR_RET }
     | "MOV"		{ INSTR_MOV }

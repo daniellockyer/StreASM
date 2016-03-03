@@ -19,7 +19,7 @@ let comment = ";"([^'\n']+)
 rule lexer_main = parse
     | ['\n' '\r'] { incr instructionPointer; EOL }
     | [' ' '\t'] { lexer_main lexbuf }
-    | digits as d { LITERAL (int_of_string d) }
+    | digits as d { LITERAL d }
     | iden as lxm { IDENTIFIER (lxm) }
     | comment   { lexer_main lexbuf }
     | ","       { COMMA }

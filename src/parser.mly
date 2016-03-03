@@ -4,11 +4,9 @@
     
     let instructions = ref [];;
     
-    let make_line (label: string) (instr: string list) = (Array.of_list (List.rev (label :: instr)));;
+    let add_line (label: string) (instr: string list) = instructions := Array.of_list (label :: instr) :: !instructions;;
     
-    let add_line (label: string) (instr: string list) = instructions := (make_line label instr) :: !instructions;;
-    
-    let add_instr instr p1 p2 p3 p4 = instr :: p1 :: p2 ::p3 :: p4 :: [];; 
+    let add_instr instr p1 p2 p3 p4 = instr :: p1 :: p2 ::p3 :: p4 :: [];;
 %}
 %token INSTR_NXT 
 %token INSTR_JMP INSTR_CALL INSTR_RET INSTR_MOV INSTR_CLR INSTR_BS INSTR_BC INSTR_BT 
@@ -65,29 +63,29 @@ label
 ;
 
 instruction
-    : INSTR_ADD register COMMA value COMMA value { add_instr "add" $2 $4 $6 ""; }
-    | INSTR_SUB register COMMA value COMMA value { add_instr "sub" $2 $4 $6 ""; }
-    | INSTR_MUL register COMMA value COMMA value { add_instr "mul" $2 $4 $6 ""; }
-    | INSTR_DIV register COMMA value COMMA value { add_instr "mul" $2 $4 $6 ""; }
-    | INSTR_TSTZ value COMMA label_ref COMMA label_ref { add_instr "tstz" $2 $4 $6 ""; }
-    | INSTR_TSTE value COMMA value COMMA label_ref COMMA label_ref { add_instr "tste" $2 $4 $6 $8; }
-    | INSTR_TSTG value COMMA value COMMA label_ref COMMA label_ref { add_instr "tstg" $2 $4 $6 $8; }
-    | INSTR_TSTGE value COMMA value COMMA label_ref COMMA label_ref { add_instr "tstge" $2 $4 $6 $8; }
-    | INSTR_TSTL value COMMA value COMMA label_ref COMMA label_ref { add_instr "tstl" $2 $4 $6 $8; }
-    | INSTR_TSTLE value COMMA value COMMA  label_ref COMMA label_ref { add_instr "tstle" $2 $4 $6 $8; }
-    | INSTR_AND register COMMA value COMMA value { add_instr "and" $2 $4 $6 ""; }
-    | INSTR_OR register COMMA value COMMA value { add_instr "or" $2 $4 $6 ""; }
-    | INSTR_NOR register COMMA value COMMA value { add_instr "nor" $2 $4 $6 ""; }
-    | INSTR_XOR register COMMA value COMMA value { add_instr "xor" $2 $4 $6 ""; }
-    | INSTR_NAND register COMMA value COMMA value { add_instr "nand" $2 $4 $6 ""; }
-    | INSTR_COM register COMMA value { add_instr "com" $2 $4 "" ""; }
-    | INSTR_JMP label { add_instr "jmp" $2 "" "" ""; }
-    | INSTR_CALL label { add_instr "call" $2 "" "" ""; }
-    | INSTR_RET { add_instr "ret" "" "" "" ""; }
-    | INSTR_MOV register COMMA value { add_instr "mov" $2 $4 "" ""; }
-    | INSTR_CLR register { add_instr "clr" $2 "" "" ""; }
-    | INSTR_BS register COMMA LITERAL { add_instr "bs" $2 $4 "" ""; }
-    | INSTR_BC register COMMA LITERAL { add_instr "bc" $2 $4 "" ""; }
-    | INSTR_BT register COMMA LITERAL COMMA label_ref COMMA label_ref { add_instr "bt" $2 $4 $6 $8; }
-    | INSTR_NXT IDENTIFIER COMMA IDENTIFIER { add_instr "nxt" $2 $4 "" ""; }
+    : INSTR_ADD register COMMA value COMMA value { add_instr "ADD" $2 $4 $6 ""; }
+    | INSTR_SUB register COMMA value COMMA value { add_instr "SUB" $2 $4 $6 ""; }
+    | INSTR_MUL register COMMA value COMMA value { add_instr "MUL" $2 $4 $6 ""; }
+    | INSTR_DIV register COMMA value COMMA value { add_instr "DIV" $2 $4 $6 ""; }
+    | INSTR_TSTZ value COMMA label_ref COMMA label_ref { add_instr "TSTZ" $2 $4 $6 ""; }
+    | INSTR_TSTE value COMMA value COMMA label_ref COMMA label_ref { add_instr "TSTE" $2 $4 $6 $8; }
+    | INSTR_TSTG value COMMA value COMMA label_ref COMMA label_ref { add_instr "TSTG" $2 $4 $6 $8; }
+    | INSTR_TSTGE value COMMA value COMMA label_ref COMMA label_ref { add_instr "TSTGE" $2 $4 $6 $8; }
+    | INSTR_TSTL value COMMA value COMMA label_ref COMMA label_ref { add_instr "TSTL" $2 $4 $6 $8; }
+    | INSTR_TSTLE value COMMA value COMMA  label_ref COMMA label_ref { add_instr "TSTLE" $2 $4 $6 $8; }
+    | INSTR_AND register COMMA value COMMA value { add_instr "AND" $2 $4 $6 ""; }
+    | INSTR_OR register COMMA value COMMA value { add_instr "OR" $2 $4 $6 ""; }
+    | INSTR_NOR register COMMA value COMMA value { add_instr "NOR" $2 $4 $6 ""; }
+    | INSTR_XOR register COMMA value COMMA value { add_instr "XOR" $2 $4 $6 ""; }
+    | INSTR_NAND register COMMA value COMMA value { add_instr "NAND" $2 $4 $6 ""; }
+    | INSTR_COM register COMMA value { add_instr "COM" $2 $4 "" ""; }
+    | INSTR_JMP label { add_instr "JMP" $2 "" "" ""; }
+    | INSTR_CALL label { add_instr "CALL" $2 "" "" ""; }
+    | INSTR_RET { add_instr "RET" "" "" "" ""; }
+    | INSTR_MOV register COMMA value { add_instr "MOV" $2 $4 "" ""; }
+    | INSTR_CLR register { add_instr "CLR" $2 "" "" ""; }
+    | INSTR_BS register COMMA LITERAL { add_instr "BS" $2 $4 "" ""; }
+    | INSTR_BC register COMMA LITERAL { add_instr "BC" $2 $4 "" ""; }
+    | INSTR_BT register COMMA LITERAL COMMA label_ref COMMA label_ref { add_instr "BT" $2 $4 $6 $8; }
+    | INSTR_NXT IDENTIFIER COMMA IDENTIFIER { add_instr "NXT" $2 $4 "" ""; }
 ;

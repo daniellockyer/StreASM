@@ -16,7 +16,6 @@ let register = alpha digits | alpha '[' alpha digits ']'
 let alphastr = alpha+
 let comment = ";"([^'\n']+)
 let newline = ['\n' '\r']
-let label = [^' ' '\t'] newline alphastr | [^' ' '\t'] alphastr ":"
 
 rule lexer_main = parse
     | newline { incr instructionPointer; EOL }
@@ -25,7 +24,6 @@ rule lexer_main = parse
     | digits as d { LITERAL (d) }
     | register as r { REGISTER (r) }
     | comment   { lexer_main lexbuf }
-    | label as l { LABEL (l) }
     | ","       { COMMA }
     | ":"       { COLON }
     | "ADD"		{ INSTR_ADD }
@@ -57,6 +55,6 @@ rule lexer_main = parse
     | "stdout" as o { STDOUT (o) }
     | "@END" as a { LABEL_END(a) }
     | "@NEXT" as a { LABEL_NEXT(a) }
-    | alphastr as a { IDENTIFIER (a) }
+    | alphastr as a { LABEL (a) }
     | _         { syntax_error "Couldn't identify the token" lexbuf }
     | eof      	{ EOF }

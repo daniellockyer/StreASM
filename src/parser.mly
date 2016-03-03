@@ -91,8 +91,8 @@ instruction
     | INSTR_XOR register COMMA value COMMA value { add_instr "XOR" $2 $4 $6 ""; }
     | INSTR_NAND register COMMA value COMMA value { add_instr "NAND" $2 $4 $6 ""; }
     | INSTR_COM register COMMA value { add_instr "COM" $2 $4 "" ""; }
-    | INSTR_JMP label { add_instr "JMP" $2 "" "" ""; }
-    | INSTR_CALL label { add_instr "CALL" $2 "" "" ""; }
+    | INSTR_JMP label_ref { add_instr "JMP" $2 "" "" ""; }
+    | INSTR_CALL label_ref { add_instr "CALL" $2 "" "" ""; }
     | INSTR_RET { add_instr "RET" "" "" "" ""; }
     | INSTR_MOV register COMMA value { add_instr "MOV" $2 $4 "" ""; }
     | INSTR_CLR register { add_instr "CLR" $2 "" "" ""; }

@@ -24,6 +24,7 @@ rule lexer_main = parse
     | digits as d { LITERAL (d) }
     | register as r { REGISTER (r) }
     | comment   { lexer_main lexbuf }
+    | alpha as a { IDENTIFIER (Char.escaped a) } 
     | ","       { COMMA }
     | ":"       { COLON }
     | "ADD"		{ INSTR_ADD }

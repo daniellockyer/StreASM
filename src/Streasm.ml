@@ -1,6 +1,8 @@
 open Hashtbl;;
 open Lexing;;
 
+let running = ref true;;
+
 let lines : string array array ref = ref (Array.of_list ((Array.of_list ("" :: [])) :: []));;
 let index = ref 0;;
 let registers = Hashtbl.create 5;;
@@ -54,7 +56,13 @@ let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.replace re
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 - val2);;
 let instr_mul (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 * val2);;
 let instr_div (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 / val2);;
-let instr_jmp (label: string) = index := find_label label;;
+let instr_jmp (label: string) = 
+    if label = "@END" then
+        running := false
+    else if label = "@NEXT" then
+        incr index
+    else 
+        index := find_label label
 let condjump (b: bool) (label1: string) (label2: string) =
     if b then
         instr_jmp label1
@@ -116,7 +124,7 @@ let instr_nxt (iden1: string) (iden2: string) =
 
 let interpret (input: string array array) =
     (lines := input;
-    while !index < Array.length !lines do
+    while !index < Array.length !lines && !running do
         let l = Array.get !lines !index in
         let label = Array.get l 0 in
         let instruction = Array.get l 1 in

@@ -92,7 +92,7 @@ let get_string (ident: string) =
         let split = Str.split (Str.regexp " ") line in
             (Hashtbl.replace registers (ident ^ "0") (List.length split);
             List.iteri (fun i elem -> 
-                Hashtbl.replace registers (ident ^ (string_of_int i)) (int_of_string elem)
+                Hashtbl.replace registers (ident ^ (string_of_int (i + 1))) (int_of_string elem)
             ) split));;
 
 let rec make_string (ident: string) (count: int) (total: int) (position: int) =

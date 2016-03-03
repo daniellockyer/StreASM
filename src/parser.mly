@@ -31,7 +31,9 @@ parser_main
 
 temp
     : temp line { }
+    | temp line TAB {}
     | line { }
+    | line TAB {}
 ;
 
 line

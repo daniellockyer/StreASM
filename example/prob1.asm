@@ -3,11 +3,12 @@
 ;the sequence that is the same as the input sequence, but starting with a single 0 character.
 
 	MOV r2, 0 	;First output variable to be 0. r2 is 0 anyway but nice to make it explicit.
-	MOV o0, 1
+
 main:
+	MOV o0, 1
 	NXT i, stdin
 	MOV r1, i1
 	MOV o1, r2
 	NXT stdout, o
 	MOV r2, r1
-	TSTZ i0, main, @END
+	TSTZ i0, @END, main

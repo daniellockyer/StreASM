@@ -87,12 +87,13 @@ let instr_bc (register: string) (v: int) = Hashtbl.replace registers register ((
 let instr_bt (reg_val: int) (bit: int) (label1: string) (label2: string) = condjump ((reg_val land (1 lsl bit)) > 0) label1 label2;;
 
 let get_string (ident: string) = 
+    (print_string "\n> ";
     let line = read_line() in
         let split = Str.split (Str.regexp " ") line in
             (Hashtbl.replace registers (ident ^ "0") (List.length split);
             List.iteri (fun i elem -> 
                 Hashtbl.replace registers (ident ^ (string_of_int i)) (int_of_string elem)
-            ) split);;
+            ) split));;
 
 let rec make_string (ident: string) (count: int) (total: int) (position: int) =
     if position < 1024 then
@@ -134,7 +135,7 @@ let interpret (input: string array array) =
         let p4 = Array.get l 5 in
         (map_label label !index;
         incr index;
-        print_string ("<" ^ label ^ "> <" ^ instruction ^ ">" ^ p1 ^ " " ^ p2 ^ " " ^ p3 ^ " " ^ p4 ^ "\n");
+     (*   print_string ("<" ^ label ^ "> <" ^ instruction ^ ">" ^ p1 ^ " " ^ p2 ^ " " ^ p3 ^ " " ^ p4 ^ "\n");*)
         match instruction with
           "ADD" -> instr_add p1 (value p2) (value p3)
         | "SUB" -> instr_sub p1 (value p2) (value p3)

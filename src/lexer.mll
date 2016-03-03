@@ -18,7 +18,8 @@ let comment = ";"([^'\n']+)
 
 rule lexer_main = parse
     | ['\n' '\r'] { incr instructionPointer; EOL }
-    | [' ' '\t'] { WHITES }
+    | [' ']     { lexer_main lexbuf }
+    | ['\t']    { TAB }
     | digits as d { LITERAL (d) }
     | iden as lxm { IDENTIFIER (lxm) }
     | comment   { lexer_main lexbuf }

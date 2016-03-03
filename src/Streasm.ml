@@ -1,16 +1,49 @@
 open Hashtbl;;
 open Lexing;;
 
+let index = ref 0;;
+
 let interpret (lines: string list array) = 
-    (let index = ref 0 in
     while !index < Array.length lines do
         let l = Array.get lines !index in
-        let label = List.hd l in
-        let instruction = List.hd (List.tl l) in
+        let label = Array.get lines 0 in
+        let instruction = Array.get lines 1 in
+        let p1 = Array.get lines 1 in
+        let p2 = Array.get lines 2 in
+        let p3 = Array.get lines 3 in
+        let p4 = Array.get lines 4 in
         (print_string (label ^ " " ^ instruction); 
         print_newline();
+        match instruction with
+          "ADD" -> instr_add p1 (value p2) (value p3)
+        | "SUB" -> instr_sub p1 (value p2) (value p3)
+        | "MUL" -> 
+        | "DIV" -> 
+        | "TSTZ" -> 
+        | "TSTE" -> 
+        | "TSTG" -> 
+        | "TSTGE" -> 
+        | "TSTL" -> 
+        | "TSTLE" -> 
+        | "AND" -> 
+        | "OR" -> 
+        | "NOR" -> 
+        | "XOR" -> 
+        | "NAND" -> 
+        | "COM" -> 
+        | "JMP" -> 
+        | "CALL" -> 
+        | "RET" -> 
+        | "MOV" -> 
+        | "CLR" -> 
+        | "BS" -> 
+        | "BC" -> 
+        | "BT" -> 
+        | "NXT" -> 
+        | "@END" -> 
+        | "@NEXT" -> 
         incr index) 
-    done);;
+    done;;
     
 let registers = Hashtbl.create 5;;
 
@@ -22,18 +55,17 @@ let lookup (register: string) =
         0    (* 0 for now but would be nice to return some kind of null maybe?*)
     ;;
 
-let getValue (register: string) =
-    if Str.string_match (Str.regexp "[a-zA-Z]+[0-9]+") register 0 
-    then
+let value (register: string) =
+    if Str.string_match (Str.regexp "[0-9]+") register 0 then
+        int_of_string register
+    else if Str.string_match (Str.regexp "[a-zA-Z]+[0-9]+") register 0 then
         lookup register
-    else 
-        if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[0-9]+\\)\\]") register 0 (* match for example r[r1] *)
-        then
-            let outer = Str.matched_group 1 register in
-                let inner = Str.matched_group 2 register in
-                    lookup (outer ^ (string_of_int (lookup inner))) 
-        else
-            0        (* return zero on fail for now: Would be nice to fail*)
+    else if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[0-9]+\\)\\]") register 0 then  (* match for example r[r1] *)
+        let outer = Str.matched_group 1 register in
+            let inner = Str.matched_group 2 register in
+                lookup (outer ^ (string_of_int (lookup inner))) 
+    else
+        0        (* return zero on fail for now: Would be nice to fail*)
 
 (*let rec find_label (location: string) (returned: string) =
     (print_string (location ^ " " ^ returned ^ "\n");

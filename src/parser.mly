@@ -4,7 +4,7 @@
     
     let instructions = ref [];;
     
-    let make_line (label: string) (instr: string list) = (label :: instr)
+    let make_line (label: string) (instr: string list) = (Array.of_list (List.rev (label :: instr)));;
     
     let add_line (label: string) (instr: string list) = instructions := (make_line label instr) :: !instructions;;
     
@@ -16,13 +16,13 @@
 %token INSTR_TSTN INSTR_TSTZ INSTR_TSTE INSTR_TSTG INSTR_TSTGE INSTR_TSTL INSTR_TSTLE
 %token INSTR_ADD INSTR_SUB INSTR_MUL INSTR_DIV
 %token COMMA COLON
-%token EOF EOL WHITES
+%token EOF EOL TAB
 %token <string> LITERAL
 %token <string> IDENTIFIER
 %token <string> LABEL LABEL_NEXT LABEL_END
 
 %start parser_main
-%type <string list array> parser_main
+%type <string array array> parser_main
 %%
 
 parser_main
@@ -35,9 +35,9 @@ temp
 ;
 
 line
-    : eol label WHITES instruction      { add_line $2 $4 }
-    | eol label EOL WHITES instruction  { add_line $2 $5 }
-    | eol WHITES instruction            { add_line "" $3 }
+    : eol label TAB instruction      { add_line $2 $4 }
+    | eol label EOL TAB instruction  { add_line $2 $5 }
+    | eol TAB instruction            { add_line "" $3 }
     | eol                               { }
 ;
 

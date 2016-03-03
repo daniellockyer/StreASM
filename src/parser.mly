@@ -9,12 +9,14 @@
     let add_instr instr p1 p2 p3 p4 = instr :: p1 :: p2 ::p3 :: p4 :: [];;
 %}
 %token INSTR_NXT 
+%token <string> STDIN STDOUT
 %token INSTR_JMP INSTR_CALL INSTR_RET INSTR_MOV INSTR_CLR INSTR_BS INSTR_BC INSTR_BT 
 %token INSTR_AND INSTR_OR INSTR_NOR INSTR_XOR INSTR_NAND INSTR_COM 
 %token INSTR_TSTN INSTR_TSTZ INSTR_TSTE INSTR_TSTG INSTR_TSTGE INSTR_TSTL INSTR_TSTLE
 %token INSTR_ADD INSTR_SUB INSTR_MUL INSTR_DIV
 %token COMMA COLON
 %token EOF EOL TAB
+%token <string> REGISTER
 %token <string> LITERAL
 %token <string> IDENTIFIER
 %token <string> LABEL LABEL_NEXT LABEL_END
@@ -44,7 +46,7 @@ eol
     |       { }
 ;
 
-register: IDENTIFIER { $1 };
+register: REGISTER { $1 };
 
 value
     : register { $1 }
@@ -60,6 +62,16 @@ label_ref
 label
     : LABEL COLON { $1 }
     | LABEL { $1 }
+;
+
+ident1
+    : IDENTIFIER { $1 }
+    | STDOUT     { $1 }
+;
+
+ident2
+    : IDENTIFIER { $1 }
+    | STDIN     { $1 }
 ;
 
 instruction
@@ -87,5 +99,5 @@ instruction
     | INSTR_BS register COMMA LITERAL { add_instr "BS" $2 $4 "" ""; }
     | INSTR_BC register COMMA LITERAL { add_instr "BC" $2 $4 "" ""; }
     | INSTR_BT register COMMA LITERAL COMMA label_ref COMMA label_ref { add_instr "BT" $2 $4 $6 $8; }
-    | INSTR_NXT IDENTIFIER COMMA IDENTIFIER { add_instr "NXT" $2 $4 "" ""; }
+    | INSTR_NXT ident1 COMMA ident2 { add_instr "NXT" $2 $4 "" ""; }
 ;

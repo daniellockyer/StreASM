@@ -14,7 +14,7 @@ let map_label (label: string) (line: int) =
             else
                 raise (Failure "wow wtf u doin' m8 dat label is defined")
         else
-            Hashtbl.add labels label line;;           
+            Hashtbl.replace labels label line;;           
 let rec find_label_aux (label: string) (index: int) = 
     if index < Array.length !lines then
         let l = Array.get !lines index in
@@ -50,29 +50,69 @@ let value (register: string) =
     else
         0        (* return zero on fail for now: Would be nice to fail*)
 
-let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 + val2);;
-let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 - val2);;
-let instr_mul (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 * val2);;
-let instr_div (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 / val2);;
+let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 + val2);;
+let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 - val2);;
+let instr_mul (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 * val2);;
+let instr_div (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 / val2);;
 let instr_jmp (label: string) = index := find_label label;;
-let instr_tstz (v: int) (label1: string) (label2: string) = 
-    if v = 0 then
+let condjump (b: bool) (label1: string) (label2: string) =
+    if b then
         instr_jmp label1
     else
         instr_jmp label2
+let instr_tstz (v: int) (label1: string) (label2: string) = condjump (v=0) label1 label2;;
+let instr_tste (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1=v2) label1 label2;;
+let instr_tstg (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1>v2) label1 label2;;
+let instr_tstge (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1>=v2) label1 label2;;
+let instr_tstl (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1<v2) label1 label2;;
+let instr_tstle (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1<=v2) label1 label2;;
+let instr_and (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 land val2);;
+let instr_nand (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (lnot (val1 land val2));;
+let instr_or (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 lor val2);;
+let instr_xor (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 lxor val2);;
+let instr_nor (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (lnot (val1 lor val2));;
+let instr_com (destination: string) (value: int) = Hashtbl.replace registers destination (lnot value);;
+let instr_mov (register: string) (value: int) = Hashtbl.replace registers register value;;
+let instr_clr (register: string) = Hashtbl.replace registers register 0;;
+let instr_bs (register: string) (v: int) = Hashtbl.replace registers register ((value register) lor (1 lsl v));;
+let instr_bc (register: string) (v: int) = Hashtbl.replace registers register ((value register) land (lnot (1 lsl v)));;
+let instr_bt (reg_val: int) (bit: int) (label1: string) (label2: string) = condjump ((reg_val land (1 lsl bit)) > 0) label1 label2;;
 
-let instr_and (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 land val2);;
-let instr_nand (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (lnot (val1 land val2));;
-let instr_or (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 lor val2);;
-let instr_xor (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (val1 lxor val2);;
-let instr_nor (destination: string) (val1: int) (val2: int) = Hashtbl.add registers destination (lnot (val1 lor val2));;
-let instr_com (destination: string) (value: int) = Hashtbl.add registers destination (lnot value);;
+let get_string (ident: string) = 
+    let line = read_line() in
+        let split = Str.split (Str.regexp " ") line in
+            (Hashtbl.replace registers (ident ^ "0") (List.length split);
+            List.iteri (fun i elem -> 
+                Hashtbl.replace registers (ident ^ (string_of_int i)) (int_of_string elem)
+            ) split);;
 
-
-let instr_mov (register: string) (value: int) = Hashtbl.add registers register value;;
-let instr_clr (register: string) = Hashtbl.add registers register 0;;
-let instr_bs (register: string) (v: int) = Hashtbl.add registers register ((value register) lor (1 lsl v));;
-let instr_bc (register: string) (v: int) = Hashtbl.add registers register ((value register) land (lnot (1 lsl v)));;
+let rec make_string (ident: string) (count: int) (total: int) (position: int) =
+    if position < 1024 then
+        if count > total then
+            let register = (ident ^ (string_of_int position)) in
+                if Hashtbl.mem registers register then
+                    (print_int (lookup register);
+                    Hashtbl.remove registers register;
+                    make_string ident count (total+1) (position+1))
+                else
+                    make_string ident count total (position+1)
+        else ()
+    else
+        raise (Failure "wow we searched 1024 things and didn't find your shit fuck off and sort your life out")
+        
+let instr_nxt (iden1: string) (iden2: string) = 
+    if iden2 = "stdin" then
+        if Str.string_match (Str.regexp "[a-zA-Z]+") iden2 0 then
+            get_string iden1
+        else
+            raise (Failure "wtf col1 looks weird!!!!!!!")
+    else if iden1 = "stdout" then
+        if Str.string_match (Str.regexp "[a-zA-Z]+") iden2 0 then
+            make_string iden2 (lookup (iden2 ^ "0")) 0 1
+        else
+            raise (Failure "wtf col2 looks weird!!!!!!!") 
+    else 
+        raise (Failure "jeez ya gotta use stdin for col2 or stdout for col1!")
 
 let interpret (input: string array array) =
     (lines := input;
@@ -93,11 +133,11 @@ let interpret (input: string array array) =
         | "MUL" -> instr_mul p1 (value p2) (value p3)
         | "DIV" -> instr_div p1 (value p2) (value p3)
         | "TSTZ" -> instr_tstz (value p1) p2 p3
-        (*| "TSTE" -> instr_tste (value p1) (value p2) p3 p4
+        | "TSTE" -> instr_tste (value p1) (value p2) p3 p4
         | "TSTG" -> instr_tstg (value p1) (value p2) p3 p4
         | "TSTGE" -> instr_tstge (value p1) (value p2) p3 p4
         | "TSTL" -> instr_tstl (value p1) (value p2) p3 p4
-        | "TSTLE" -> instr_tstle (value p1) (value p2) p3 p4*)
+        | "TSTLE" -> instr_tstle (value p1) (value p2) p3 p4
         | "AND" -> instr_and p1 (value p2) (value p3)
         | "OR" -> instr_or p1 (value p2) (value p3)
         | "NOR" -> instr_nor p1 (value p2) (value p3)
@@ -111,8 +151,8 @@ let interpret (input: string array array) =
         | "CLR" -> instr_clr p1
         | "BS" -> instr_bs p1 (value p2) 
         | "BC" -> instr_bc p1 (value p2)
-        (*| "BT" -> instr_bt p1 (value p2) p3 p4
-        | "NXT" -> instr_nxt p1 p2*)
+        | "BT" -> instr_bt (value p1) (value p2) p3 p4
+        | "NXT" -> instr_nxt p1 p2
         | _ -> raise ( Failure "wow wtf" ) 
         ) 
     done);;

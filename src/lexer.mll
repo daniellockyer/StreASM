@@ -12,17 +12,20 @@
 let digit = ['0'-'9']
 let digits = digit+
 let alpha = ['a'-'z' 'A'-'Z']
-let iden = alpha digits | alpha '[' alpha digits ']'
-let alphastring = alpha+
+let register = alpha digits | alpha '[' alpha digits ']'
+let alphastr = alpha+
 let comment = ";"([^'\n']+)
+let newline = ['\n' '\r']
+let label = [^' ' '\t'] newline alphastr | [^' ' '\t'] alphastr ":"
 
 rule lexer_main = parse
-    | ['\n' '\r'] { incr instructionPointer; EOL }
+    | newline { incr instructionPointer; EOL }
     | [' ']     { lexer_main lexbuf }
     | ['\t']    { TAB }
     | digits as d { LITERAL (d) }
-    | iden as lxm { IDENTIFIER (lxm) }
+    | register as r { REGISTER (r) }
     | comment   { lexer_main lexbuf }
+    | label as l { LABEL (l) }
     | ","       { COMMA }
     | ":"       { COLON }
     | "ADD"		{ INSTR_ADD }
@@ -50,8 +53,10 @@ rule lexer_main = parse
     | "BC"		{ INSTR_BC }
     | "BT"		{ INSTR_BT }
     | "NXT"		{ INSTR_NXT }
+    | "stdin" as i  { STDIN (i) }
+    | "stdout" as o { STDOUT (o) }
     | "@END" as a { LABEL_END(a) }
     | "@NEXT" as a { LABEL_NEXT(a) }
-    | alphastring as a { LABEL (a) }
+    | alphastr as a { IDENTIFIER (a) }
     | _         { syntax_error "Couldn't identify the token" lexbuf }
     | eof      	{ EOF }

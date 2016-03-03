@@ -1,6 +1,12 @@
 %{
     open Streasm
     open Printf
+    
+    let instructions = [];;
+    
+    let add_line (label: string) (instr: list) = instructions <- ((label :: instr :: []) :: instructions);;
+    
+    let add_instr (instr: string) ?param1 ?param2 ?param3 ?param4 = instr :: param1 :: param2 :: param3 :: param4 :: [];; 
 %}
 %token INSTR_NXT 
 %token INSTR_JMP INSTR_CALL INSTR_RET INSTR_MOV INSTR_CLR INSTR_BS INSTR_BC INSTR_BT 
@@ -8,24 +14,28 @@
 %token INSTR_TSTN INSTR_TSTZ INSTR_TSTE INSTR_TSTG INSTR_TSTGE INSTR_TSTL INSTR_TSTLE
 %token INSTR_ADD INSTR_SUB INSTR_MUL INSTR_DIV
 %token COMMA COLON
-%token EOF
+%token EOF EOL
 %token <int> LITERAL
 %token <string> IDENTIFIER
 %token <string> LABEL LABEL_NEXT LABEL_END
 
 %start parser_main
-%type <unit> parser_main
+%type <Array> parser_main
 %%
 
 parser_main
-   : parser_main line {}
-   | line {}
-   | EOF {}
+   : temp EOF { Array.of_list instructions }
+;
+
+temp
+    : temp line { }
+    | line { }
 ;
 
 line
-    : label instruction {}
-    | instruction {}
+    : label instruction     { add_line $1 $2 }
+    | label EOL instruction { add_line $1 $3 }
+    | instruction           { add_line "" $1 }
 ;
 
 register: IDENTIFIER { $1 };
@@ -49,30 +59,29 @@ label
 ;
 
 instruction
-    : INSTR_ADD register COMMA value COMMA value { instr_add $2 $4 $6; print_int (getValue $2); print_newline(); }
-    | INSTR_SUB register COMMA value COMMA value { instr_sub $2 $4 $6; print_int (getValue $2); print_newline(); }
-    | INSTR_MUL register COMMA value COMMA value { instr_mul $2 $4 $6; print_int (getValue $2); print_newline(); }
-    | INSTR_DIV register COMMA value COMMA value { instr_div $2 $4 $6; print_int (getValue $2); print_newline(); }
-    | INSTR_TSTN register COMMA label_ref COMMA label_ref { }
-    | INSTR_TSTZ register COMMA label_ref COMMA label_ref { }
-    | INSTR_TSTE register COMMA register COMMA label_ref COMMA label_ref { }
-    | INSTR_TSTG register COMMA register COMMA label_ref COMMA label_ref { }
-    | INSTR_TSTGE register COMMA register COMMA label_ref COMMA label_ref { }
-    | INSTR_TSTL register COMMA register COMMA label_ref COMMA label_ref { }
-    | INSTR_TSTLE register COMMA register COMMA  label_ref COMMA label_ref { }
-    | INSTR_AND register COMMA value COMMA value { instr_and $2 $4 $6; print_int (getValue $2); print_newline(); }
-    | INSTR_OR register COMMA value COMMA value { instr_or $2 $4 $6; print_int (getValue $2); print_newline(); }
-    | INSTR_NOR register COMMA value COMMA value { instr_nor $2 $4 $6; print_int (getValue $2); print_newline(); }
-    | INSTR_XOR register COMMA value COMMA value { instr_xor $2 $4 $6; print_int (getValue $2); print_newline(); }
-    | INSTR_NAND register COMMA value COMMA value { instr_nand $2 $4 $6; print_int (getValue $2); print_newline(); }
-    | INSTR_COM register COMMA value { instr_com $2 $4; print_int (getValue $2); print_newline(); }
-    | INSTR_JMP label { }
-    | INSTR_CALL label { }
-    | INSTR_RET {}
-    | INSTR_MOV register COMMA value { instr_mov $2 $4; print_int (getValue $2); print_newline(); }
-    | INSTR_CLR register { instr_clr $2; print_int (getValue $2); print_newline(); }
-    | INSTR_BS register COMMA LITERAL { instr_bs $2 $4; print_int (getValue $2); print_newline(); }
-    | INSTR_BC register COMMA LITERAL { instr_bc $2 $4; print_int (getValue $2); print_newline(); }
-    | INSTR_BT register COMMA LITERAL COMMA label_ref COMMA label_ref {}
-    | INSTR_NXT IDENTIFIER COMMA IDENTIFIER {}
+    : INSTR_ADD register COMMA value COMMA value { add_instr "add" $2 $4 $6; }
+    | INSTR_SUB register COMMA value COMMA value { add_instr "sub" $2 $4 $6; }
+    | INSTR_MUL register COMMA value COMMA value { add_instr "mul" $2 $4 $6; }
+    | INSTR_DIV register COMMA value COMMA value { add_instr "mul" $2 $4 $6; }
+    | INSTR_TSTZ value COMMA label_ref COMMA label_ref { add_instr "tstz" $2 $4 $6; }
+    | INSTR_TSTE value COMMA value COMMA label_ref COMMA label_ref { add_instr "tste" $2 $4 $6 $8; }
+    | INSTR_TSTG value COMMA value COMMA label_ref COMMA label_ref { add_instr "tstg" $2 $4 $6 $8; }
+    | INSTR_TSTGE value COMMA value COMMA label_ref COMMA label_ref { add_instr "tstge" $2 $4 $6 $8; }
+    | INSTR_TSTL value COMMA value COMMA label_ref COMMA label_ref { add_instr "tstl" $2 $4 $6 $8; }
+    | INSTR_TSTLE value COMMA value COMMA  label_ref COMMA label_ref { add_instr "tstle" $2 $4 $6 $8; }
+    | INSTR_AND register COMMA value COMMA value { add_instr "and" $2 $4 $6; }
+    | INSTR_OR register COMMA value COMMA value { add_instr "or" $2 $4 $6; }
+    | INSTR_NOR register COMMA value COMMA value { add_instr "nor" $2 $4 $6; }
+    | INSTR_XOR register COMMA value COMMA value { add_instr "xor" $2 $4 $6; }
+    | INSTR_NAND register COMMA value COMMA value { add_instr "nand" $2 $4 $6; }
+    | INSTR_COM register COMMA value { add_instr "com" $2 $4; }
+    | INSTR_JMP label { add_instr "jmp" $2; }
+    | INSTR_CALL label { add_instr "call" $2; }
+    | INSTR_RET { add_instr "ret"; }
+    | INSTR_MOV register COMMA value { add_instr "mov" $2 $4; }
+    | INSTR_CLR register { add_instr "clr" $2; }
+    | INSTR_BS register COMMA LITERAL { add_instr "bs" $2 $4; }
+    | INSTR_BC register COMMA LITERAL { add_instr "bc" $2 $4; }
+    | INSTR_BT register COMMA LITERAL COMMA label_ref COMMA label_ref { add_instr "bt" $2, $4, $6, $8; }
+    | INSTR_NXT IDENTIFIER COMMA IDENTIFIER { add_instr "nxt" $2 $4; }
 ;

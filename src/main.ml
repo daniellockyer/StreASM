@@ -8,7 +8,8 @@ exception Error of exn * (int * int * string)
 let parseProgram c = 
     let lexbuf = Lexing.from_channel c in
     	try 
-        	parser_main lexer_main lexbuf 
+        	let parsed = parser_main lexer_main lexbuf in
+        	    interpret parsed
     	with Parsing.Parse_error ->
     		begin
 		        let curr = lexbuf.Lexing.lex_curr_p in

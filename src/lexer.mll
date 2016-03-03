@@ -17,7 +17,7 @@ let alphastring = alpha+
 let comment = ";"([^'\n']+)
 
 rule lexer_main = parse
-    | ['\n' '\r'] { incr instructionPointer; lexer_main lexbuf; }
+    | ['\n' '\r'] { incr instructionPointer; EOL }
     | [' ' '\t'] { lexer_main lexbuf }
     | digits as d { LITERAL (int_of_string d) }
     | iden as lxm { IDENTIFIER (lxm) }
@@ -28,7 +28,6 @@ rule lexer_main = parse
     | "SUB"		{ INSTR_SUB }
     | "MUL"		{ INSTR_MUL }
     | "DIV"		{ INSTR_DIV }
-    | "TSTN"	{ INSTR_TSTN }
     | "TSTZ"	{ INSTR_TSTZ }
     | "TSTE"	{ INSTR_TSTE }
     | "TSTG"	{ INSTR_TSTG }

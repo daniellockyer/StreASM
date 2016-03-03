@@ -7,7 +7,6 @@
 | MUL dest, src1, src2 | |
 | DIV dest, src1, src2 | |
 |---|---|
-| TSTN reg, ifnull, ifnnull | |
 | TSTZ reg, if0, ifn0 | |
 | TSTE reg1, reg2, ifeq, ifneq | |
 | TSTG reg1, reg2, ifg, ifng | |

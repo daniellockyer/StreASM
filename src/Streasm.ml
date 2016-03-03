@@ -1,6 +1,17 @@
 open Hashtbl;;
 open Lexing;;
 
+let interpret (lines: string list array) = 
+    (let index = ref 0 in
+    while !index < Array.length lines do
+        let l = Array.get lines !index in
+        let label = List.hd l in
+        let instruction = List.hd (List.tl l) in
+        (print_string (label ^ " " ^ instruction); 
+        print_newline();
+        incr index) 
+    done);;
+    
 let registers = Hashtbl.create 5;;
 
 let lookup (register: string) = 

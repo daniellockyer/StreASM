@@ -13,13 +13,13 @@ let parseProgram c =
     	with Parsing.Parse_error ->
     		begin
 		        let curr = lexbuf.Lexing.lex_curr_p in
-		        let line = curr.Lexing.pos_lnum in
+		        let line = !instructionPointer in
 		        let cnum = curr.Lexing.pos_cnum - curr.Lexing.pos_bol in
 		        let tok = Lexing.lexeme lexbuf in
 		        	begin
 		        		print_string "Line: "; print_int line; print_newline();
 		        		print_string "Column: "; print_int cnum; print_newline();
-		        		print_string "Token: "; print_string tok; print_newline();
+		        		print_string ("Token: <" ^ tok ^ ">\n"); print_newline();
 				        raise (Error (Parsing.Parse_error, (line,cnum,tok)))
 		        	end
 	      	end;;

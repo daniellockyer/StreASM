@@ -18,8 +18,8 @@ let comment = ";"([^'\n']+)
 
 rule lexer_main = parse
     | ['\n' '\r'] { incr instructionPointer; EOL }
-    | [' ' '\t'] { lexer_main lexbuf }
-    | digits as d { LITERAL d }
+    | [' ' '\t'] { WHITES }
+    | digits as d { LITERAL (d) }
     | iden as lxm { IDENTIFIER (lxm) }
     | comment   { lexer_main lexbuf }
     | ","       { COMMA }
@@ -53,4 +53,4 @@ rule lexer_main = parse
     | "@NEXT" as a { LABEL_NEXT(a) }
     | alphastring as a { LABEL (a) }
     | _         { syntax_error "Couldn't identify the token" lexbuf }
-    | eof      	{ print_endline "EOF"; EOF }
+    | eof      	{ EOF }

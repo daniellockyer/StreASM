@@ -31,10 +31,13 @@ parser_main
 
 temp
     : temp line { }
-    | temp line TAB {}
+    | temp line tab { }
     | line { }
-    | line TAB {}
+    | line tab { }
 ;
+
+tab : TAB   { }
+    | TAB tab { }
 
 line
     : eol label TAB instruction      { add_line $2 $4 }

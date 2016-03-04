@@ -16,7 +16,7 @@ main:
 	ADD r3, r1, r0			; Sum of the two previous terms
 	ADD r3, r2, r3			; Add on the number from this cycle
 	MOV o1, r3				; Put our result to the outputs
+	NXT stdout, o
 	MOV r0, r1				; Update n-2 term
 	MOV r1, r3				; Update n-1 term
-	NXT stdout, o 			
 	JMP main				; Loop

@@ -2,7 +2,7 @@ open Hashtbl;;
 open Lexing;;
 
 let running = ref true;;
-
+let return_stack : int list ref = ref (0 :: []);;
 let lines : string array array ref = ref (Array.of_list ((Array.of_list ("" :: [])) :: []));;
 let index = ref 0;;
 let registers = Hashtbl.create 5;;
@@ -99,10 +99,19 @@ let instr_clr (register: string) = bind_value register 0;;
 let instr_bs (register: string) (v: int) = bind_value register ((value register) lor (1 lsl v));;
 let instr_bc (register: string) (v: int) = bind_value register ((value register) land (lnot (1 lsl v)));;
 let instr_bt (reg_val: int) (bit: int) (label1: string) (label2: string) = condjump ((reg_val land (1 lsl bit)) > 0) label1 label2;;
-
 let instr_incr (register: string) = bind_value register ((value register) + 1);;
 let instr_decr (register: string) = bind_value register ((value register) - 1);;
-
+let instr_call (label: string) = 
+    (return_stack := (!index :: !return_stack);
+    instr_jmp label);;
+let instr_ret () =
+    match !return_stack with
+        [] ->
+            running := false
+        | head::rest ->
+            (index := head;
+            return_stack := rest)
+    
 let get_string (ident: string) = 
     (print_string "\n> ";
     let line = read_line() in
@@ -156,7 +165,7 @@ let interpret (input: string array array) =
         let p4 = Array.get l 5 in
         (map_label label !index;
         incr index;
-     (*   print_string ("<" ^ label ^ "> <" ^ instruction ^ ">" ^ p1 ^ " " ^ p2 ^ " " ^ p3 ^ " " ^ p4 ^ "\n");*)
+        (*print_string ("<" ^ (string_of_int !index) ^ "> <" ^ label ^ "> <" ^ instruction ^ "> " ^ p1 ^ " " ^ p2 ^ " " ^ p3 ^ " " ^ p4 ^ "\n");*)
         match instruction with
           "ADD" -> instr_add p1 (value p2) (value p3)
         | "SUB" -> instr_sub p1 (value p2) (value p3)
@@ -175,8 +184,8 @@ let interpret (input: string array array) =
         | "NAND" -> instr_nand p1 (value p2) (value p3)
         | "COM" -> instr_com p1 (value p2)
         | "JMP" -> instr_jmp p1
-        (*| "CALL" -> instr_call p1
-        | "RET" -> instr_ret*)
+        | "CALL" -> instr_call p1
+        | "RET" -> instr_ret ()
         | "MOV" -> instr_mov p1 (value p2)
         | "CLR" -> instr_clr p1
         | "BS" -> instr_bs p1 (value p2) 

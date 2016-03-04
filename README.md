@@ -22,8 +22,8 @@
 | COM dest, src1 | |
 |---|---|
 | JMP label | |
-| CALL label | Not Yet Implemented!! |
-| RET | Not Yet Implemented!! |
+| CALL label | |
+| RET | |
 | MOV dest, src | |
 | CLR reg | |
 | BS reg, bit | |

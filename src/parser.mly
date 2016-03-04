@@ -38,6 +38,7 @@ temp
 
 tab : TAB   { }
     | TAB tab { }
+;
 
 line
     : eol label TAB instruction      { add_line $2 $4 }

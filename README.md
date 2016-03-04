@@ -22,15 +22,15 @@
 | COM dest, src1 | |
 |---|---|
 | JMP label | |
-| CALL label | |
-| RET | |
+| CALL label | Not Yet Implemented!! |
+| RET | Not Yet Implemented!! |
 | MOV dest, src | |
 | CLR reg | |
 | BS reg, bit | |
 | BC reg, bit | |
 | BT reg, bit, if1, if0 | |
 | INCR reg | |
-| DECR ref | |
+| DECR reg | |
 |---|---|
 | NXT name, name | |
 | @END | |

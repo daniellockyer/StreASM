@@ -27,4 +27,4 @@
 | TSTGE reg1, reg2, ifge, ifnge | |
 | TSTL reg1, reg2, ifl, ifnl | |
 | TSTLE reg1, reg2, ifle, ifnle | |
-| BT reg, bit, if1, if0 | |
+| TSTB reg, bit, if1, if0 | |

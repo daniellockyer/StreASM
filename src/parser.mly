@@ -9,7 +9,7 @@
 %token INSTR_ADD INSTR_SUB INSTR_MUL INSTR_DIV
 %token INSTR_AND INSTR_OR INSTR_NOR INSTR_XOR INSTR_NAND INSTR_COM
 %token INSTR_CLR INSTR_JMP INSTR_CALL INSTR_RET
-%token INSTR_TSTZ INSTR_TSTE INSTR_TSTG INSTR_TSTGE INSTR_TSTL INSTR_TSTLE INSTR_BT
+%token INSTR_TSTZ INSTR_TSTE INSTR_TSTG INSTR_TSTGE INSTR_TSTL INSTR_TSTLE INSTR_TSTB
 %token COMMA COLON EOF EOL TAB
 %token <string> STDIN STDOUT
 %token <string> IDENTIFIER REGISTER LABEL LABEL_NEXT LABEL_END
@@ -96,7 +96,7 @@ instruction
     | INSTR_COM register COMMA value { add_instr "COM" $2 $4 "" "" }
     | INSTR_CLR register { add_instr "CLR" $2 "" "" "" }
     | INSTR_JMP label_ref { add_instr "JMP" $2 "" "" "" }
-    | INSTR_CALL label_ref { add_instr "CALL" $2 "" "" "" }
+    | INSTR_CALL label { add_instr "CALL" $2 "" "" "" }
     | INSTR_RET { add_instr "RET" "" "" "" "" }
     | INSTR_TSTZ value COMMA label_ref COMMA label_ref { add_instr "TSTZ" $2 $4 $6 "" }
     | INSTR_TSTE value COMMA value COMMA label_ref COMMA label_ref { add_instr "TSTE" $2 $4 $6 $8 }
@@ -104,5 +104,5 @@ instruction
     | INSTR_TSTGE value COMMA value COMMA label_ref COMMA label_ref { add_instr "TSTGE" $2 $4 $6 $8 }
     | INSTR_TSTL value COMMA value COMMA label_ref COMMA label_ref { add_instr "TSTL" $2 $4 $6 $8 }
     | INSTR_TSTLE value COMMA value COMMA  label_ref COMMA label_ref { add_instr "TSTLE" $2 $4 $6 $8 }
-    | INSTR_BT register COMMA literal COMMA label_ref COMMA label_ref { add_instr "BT" $2 $4 $6 $8 }
+    | INSTR_TSTB register COMMA literal COMMA label_ref COMMA label_ref { add_instr "BT" $2 $4 $6 $8 }
 ;

@@ -86,6 +86,7 @@ let instr_tstg (v1: int) (v2: int) (label1: string) (label2: string) = condjump 
 let instr_tstge (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1>=v2) label1 label2;;
 let instr_tstl (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1<v2) label1 label2;;
 let instr_tstle (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1<=v2) label1 label2;;
+let instr_tstb (reg_val: int) (bit: int) (label1: string) (label2: string) = condjump ((reg_val land (1 lsl bit)) > 0) label1 label2;;
 let instr_and (destination: string) (val1: int) (val2: int) = bind_value destination (val1 land val2);;
 let instr_nand (destination: string) (val1: int) (val2: int) = bind_value destination (lnot (val1 land val2));;
 let instr_or (destination: string) (val1: int) (val2: int) = bind_value destination (val1 lor val2);;
@@ -99,7 +100,6 @@ let instr_bs (register: string) (pos: int) (v: int) =
         bind_value register ((value register) lor (1 lsl pos))
     else 
         bind_value register ((value register) land (lnot (1 lsl v)))
-let instr_bt (reg_val: int) (bit: int) (label1: string) (label2: string) = condjump ((reg_val land (1 lsl bit)) > 0) label1 label2;;
 let instr_incr (register: string) = bind_value register ((value register) + 1);;
 let instr_decr (register: string) = bind_value register ((value register) - 1);;
 let instr_call (label: string) = 
@@ -179,6 +179,7 @@ let interpret (input: string array array) =
         | "TSTGE" -> instr_tstge (value p1) (value p2) p3 p4
         | "TSTL" -> instr_tstl (value p1) (value p2) p3 p4
         | "TSTLE" -> instr_tstle (value p1) (value p2) p3 p4
+        | "TSTB" -> instr_tstb (value p1) (value p2) p3 p4
         | "AND" -> instr_and p1 (value p2) (value p3)
         | "OR" -> instr_or p1 (value p2) (value p3)
         | "NOR" -> instr_nor p1 (value p2) (value p3)
@@ -191,7 +192,6 @@ let interpret (input: string array array) =
         | "MOV" -> instr_mov p1 (value p2)
         | "CLR" -> instr_clr p1
         | "BS" -> instr_bs p1 (value p2) (value p3)
-        | "BT" -> instr_bt (value p1) (value p2) p3 p4
         | "INCR" -> instr_incr p1 
         | "DECR" -> instr_decr p1
         | "NXT" -> instr_nxt p1 p2

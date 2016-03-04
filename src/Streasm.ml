@@ -37,7 +37,7 @@ let lookup (register: string) =
     if Hashtbl.mem registers register then
         Hashtbl.find registers register
     else
-        raise (Failure ("The register " ^ register ^ " is unbound"))
+        raise (Failure ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index)))
     ;;
 
 let value (register: string) =
@@ -50,7 +50,7 @@ let value (register: string) =
             let inner = Str.matched_group 2 register in
                 lookup (outer ^ (string_of_int (lookup inner))) 
     else
-        raise (Failure ("The register " ^ register ^ " is unbound"))
+        raise (Failure ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index)))
 
 let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 + val2);;
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 - val2);;

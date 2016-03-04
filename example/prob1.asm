@@ -3,7 +3,6 @@
 ;the sequence that is the same as the input sequence, but starting with a single 0 character.
 
 	MOV r2, 0
-	MOV o0, 1
 
 main:
 	NXT i, stdin

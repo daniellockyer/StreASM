@@ -3,7 +3,6 @@
 	MOV o1, 5678
 	NXT stdout, o
 	JMP @END
-
 func:
 	MOV o1, 1234
 	NXT stdout, o

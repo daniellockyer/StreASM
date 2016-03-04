@@ -3,7 +3,7 @@
 ;the sequence that is the same as the input sequence, but starting with an additional single 0 character.
 
 	MOV r2, 0		;This is the value to prepend
-				;We act like we did a previous cycle with value 0
+					;We act like we did a previous cycle with value 0
 
 main:
 	NXT i, stdin		;Get the input

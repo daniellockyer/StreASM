@@ -43,7 +43,8 @@ line
 
 eol
     : EOL eol   { }
-    | EOL       { };
+    | EOL       { }
+;
 
 tab 
     : tab TAB   { }

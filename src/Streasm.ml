@@ -96,18 +96,18 @@ let get_string (ident: string) =
             ) split));;
 
 let rec make_string (ident: string) (count: int) (total: int) (position: int) =
-    if position < 1024 then
-        if count > total then
-            let register = (ident ^ (string_of_int position)) in
-                if Hashtbl.mem registers register then
-                    (print_int (lookup register); print_string " ";
-                    Hashtbl.remove registers register;
-                    make_string ident count (total+1) (position+1))
-                else
-                    make_string ident count total (position+1)
-        else ()
-    else
+    if (count = 0 || count > total) && position < 1024 then
+        let register = (ident ^ (string_of_int position)) in
+            if Hashtbl.mem registers register then
+                (print_int (lookup register); print_string " ";
+                Hashtbl.remove registers register;
+                make_string ident count (total+1) (position+1))
+            else
+                make_string ident count total (position+1)
+    else if count <> 0 then
         raise (Failure "wow we searched 1024 things and didn't find your shit fuck off and sort your life out")
+    else
+        ()
         
 let instr_nxt (iden1: string) (iden2: string) = 
     if iden2 = "stdin" then
@@ -117,7 +117,10 @@ let instr_nxt (iden1: string) (iden2: string) =
             raise (Failure "wtf col1 looks weird!!!!!!!")
     else if iden1 = "stdout" then
         if Str.string_match (Str.regexp "[a-zA-Z]+") iden2 0 then
-            make_string iden2 (lookup (iden2 ^ "0")) 0 1
+            if Hashtbl.mem registers iden2 then
+                make_string iden2 (lookup (iden2 ^ "0")) 0 1
+            else
+                make_string iden2 0 0 1
         else
             raise (Failure "wtf col2 looks weird!!!!!!!") 
     else 

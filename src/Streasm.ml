@@ -1,5 +1,4 @@
 open Hashtbl;;
-open Lexing;;
 
 let running = ref true;;
 let return_stack : int list ref = ref [];;
@@ -65,7 +64,6 @@ let bind_value (register: string) (value: int) =
     else
         raise (Failure ("Expected a register, recieved " ^ register))
         
-
 let instr_add (destination: string) (val1: int) (val2: int) = bind_value destination (val1 + val2);;
 let instr_sub (destination: string) (val1: int) (val2: int) = bind_value destination (val1 - val2);;
 let instr_mul (destination: string) (val1: int) (val2: int) = bind_value destination (val1 * val2);;
@@ -96,8 +94,11 @@ let instr_nor (destination: string) (val1: int) (val2: int) = bind_value destina
 let instr_com (destination: string) (value: int) = bind_value destination (lnot value);;
 let instr_mov (register: string) (value: int) = bind_value register value;;
 let instr_clr (register: string) = bind_value register 0;;
-let instr_bs (register: string) (v: int) = bind_value register ((value register) lor (1 lsl v));;
-let instr_bc (register: string) (v: int) = bind_value register ((value register) land (lnot (1 lsl v)));;
+let instr_bs (register: string) (pos: int) (v: int) = 
+    if v = 1 then
+        bind_value register ((value register) lor (1 lsl pos))
+    else 
+        bind_value register ((value register) land (lnot (1 lsl v)))
 let instr_bt (reg_val: int) (bit: int) (label1: string) (label2: string) = condjump ((reg_val land (1 lsl bit)) > 0) label1 label2;;
 let instr_incr (register: string) = bind_value register ((value register) + 1);;
 let instr_decr (register: string) = bind_value register ((value register) - 1);;
@@ -189,8 +190,7 @@ let interpret (input: string array array) =
         | "RET" -> instr_ret ()
         | "MOV" -> instr_mov p1 (value p2)
         | "CLR" -> instr_clr p1
-        | "BS" -> instr_bs p1 (value p2) 
-        | "BC" -> instr_bc p1 (value p2)
+        | "BS" -> instr_bs p1 (value p2) (value p3)
         | "BT" -> instr_bt (value p1) (value p2) p3 p4
         | "INCR" -> instr_incr p1 
         | "DECR" -> instr_decr p1

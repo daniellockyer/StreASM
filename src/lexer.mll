@@ -11,8 +11,9 @@
 
 let digit = ['0'-'9']
 let digits = digit+
+let literal = '-'? digits
 let alpha = ['a'-'z' 'A'-'Z']
-let register = alpha digits | alpha '[' alpha digits ']'
+let register = alpha literal | alpha '[' alpha literal ']'
 let alphastr = alpha+
 let comment = ";"([^'\n']+)
 let newline = ['\n' '\r']
@@ -21,7 +22,7 @@ rule lexer_main = parse
     | newline { incr instructionPointer; EOL }
     | [' ']     { lexer_main lexbuf }
     | ['\t']    { TAB }
-    | digits as d { LITERAL (d) }
+    | literal as d { LITERAL (d) }
     | register as r { REGISTER (r) }
     | comment   { lexer_main lexbuf }
     | alpha as a { IDENTIFIER (Char.escaped a) } 

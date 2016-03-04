@@ -41,11 +41,11 @@ let lookup (register: string) =
     ;;
 
 let value (register: string) =
-    if Str.string_match (Str.regexp "[0-9]+") register 0 then
+    if Str.string_match (Str.regexp "[-]?[0-9]+") register 0 then
         int_of_string register
-    else if Str.string_match (Str.regexp "[a-zA-Z]+[0-9]+") register 0 then
+    else if Str.string_match (Str.regexp "[a-zA-Z]+[-]?[0-9]+") register 0 then
         lookup register
-    else if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[0-9]+\\)\\]") register 0 then  (* match for example r[r1] *)
+    else if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[-]?[0-9]+\\)\\]") register 0 then  (* match for example r[r1] *)
         let outer = Str.matched_group 1 register in
             let inner = Str.matched_group 2 register in
                 lookup (outer ^ (string_of_int (lookup inner))) 
@@ -53,12 +53,12 @@ let value (register: string) =
         raise (Failure ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index)))
         
 let bind_value (register: string) (value: int) = 
-    if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\([0-9]+\\)") register 0 then
+    if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\([-]?[0-9]+\\)") register 0 then
         let ident = Str.matched_group 1 register in
         let number = Str.matched_group 2 register in
         (* we want to remove many 0's, eg convert 00001 -> 1 *)
         Hashtbl.replace registers (ident ^ (string_of_int (int_of_string number))) value
-    else if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[0-9]+\\)\\]") register 0 then
+    else if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[-]?[0-9]+\\)\\]") register 0 then
         let ident = Str.matched_group 1 register in
         let number = Str.matched_group 2 register in
         Hashtbl.replace registers (ident ^ (string_of_int (lookup number))) value

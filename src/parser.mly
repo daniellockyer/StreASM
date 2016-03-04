@@ -13,7 +13,7 @@
 %token INSTR_JMP INSTR_CALL INSTR_RET INSTR_MOV INSTR_CLR INSTR_BS INSTR_BC INSTR_BT 
 %token INSTR_AND INSTR_OR INSTR_NOR INSTR_XOR INSTR_NAND INSTR_COM 
 %token INSTR_TSTN INSTR_TSTZ INSTR_TSTE INSTR_TSTG INSTR_TSTGE INSTR_TSTL INSTR_TSTLE
-%token INSTR_ADD INSTR_SUB INSTR_MUL INSTR_DIV
+%token INSTR_ADD INSTR_SUB INSTR_MUL INSTR_DIV INSTR_INCR INSTR_DECR
 %token COMMA COLON
 %token EOF EOL TAB
 %token <string> REGISTER
@@ -100,6 +100,8 @@ instruction
     | INSTR_CLR register { add_instr "CLR" $2 "" "" ""; }
     | INSTR_BS register COMMA LITERAL { add_instr "BS" $2 $4 "" ""; }
     | INSTR_BC register COMMA LITERAL { add_instr "BC" $2 $4 "" ""; }
+    | INSTR_INCR register { add_instr "INCR" $2 "" "" ""; }
+    | INSTR_DECR register { add_instr "DECR" $2 "" "" ""; }
     | INSTR_BT register COMMA LITERAL COMMA label_ref COMMA label_ref { add_instr "BT" $2 $4 $6 $8; }
     | INSTR_NXT ident1 COMMA ident2 { add_instr "NXT" $2 $4 "" ""; }
 ;

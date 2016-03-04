@@ -52,6 +52,8 @@ rule lexer_main = parse
     | "BC"		{ INSTR_BC }
     | "BT"		{ INSTR_BT }
     | "NXT"		{ INSTR_NXT }
+    | "INCR"    { INSTR_INCR }
+    | "DECR"    { INSTR_DECR }
     | "stdin" as i  { STDIN (i) }
     | "stdout" as o { STDOUT (o) }
     | "@END" as a { LABEL_END(a) }

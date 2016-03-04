@@ -29,6 +29,8 @@
 | BS reg, bit | |
 | BC reg, bit | |
 | BT reg, bit, if1, if0 | |
+| INCR reg | |
+| DECR ref | |
 |---|---|
 | NXT name, name | |
 | @END | |

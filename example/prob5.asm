@@ -24,7 +24,7 @@
 	MOV c0, 1
 
 main:
-	ADD c0, c0, 1
+	INCR c0
 	NXT i, stdin
 	TSTZ i0, @END, @NEXT
 	MOV c[c0], i1
@@ -38,8 +38,8 @@ main:
 out	TSTE r0, c0, output, @NEXT
 	MUL r1, f[r0], c[r3]
 	ADD r2, r2, r1
-	ADD r0, r0, 1
-	SUB r3, r3, 1
+	INCR r0
+	DECR r3
 	JMP out
 output	MOV o0, 1
 	MOV o1, r2

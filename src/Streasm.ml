@@ -100,6 +100,9 @@ let instr_bs (register: string) (v: int) = bind_value register ((value register)
 let instr_bc (register: string) (v: int) = bind_value register ((value register) land (lnot (1 lsl v)));;
 let instr_bt (reg_val: int) (bit: int) (label1: string) (label2: string) = condjump ((reg_val land (1 lsl bit)) > 0) label1 label2;;
 
+let instr_incr (register: string) = bind_value register ((value register) + 1);;
+let instr_decr (register: string) = bind_value register ((value register) - 1);;
+
 let get_string (ident: string) = 
     (print_string "\n> ";
     let line = read_line() in
@@ -131,10 +134,11 @@ let instr_nxt (iden1: string) (iden2: string) =
             raise (Failure "wtf col1 looks weird!!!!!!!")
     else if iden1 = "stdout" then
         if Str.string_match (Str.regexp "[a-zA-Z]+") iden2 0 then
-            if Hashtbl.mem registers iden2 then
+            (if Hashtbl.mem registers iden2 then
                 make_string iden2 (lookup (iden2 ^ "0")) 0 1
             else
-                make_string iden2 0 0 1
+                make_string iden2 0 0 1;
+            print_newline())
         else
             raise (Failure "wtf col2 looks weird!!!!!!!") 
     else 
@@ -178,6 +182,8 @@ let interpret (input: string array array) =
         | "BS" -> instr_bs p1 (value p2) 
         | "BC" -> instr_bc p1 (value p2)
         | "BT" -> instr_bt (value p1) (value p2) p3 p4
+        | "INCR" -> instr_incr p1 
+        | "DECR" -> instr_decr p1
         | "NXT" -> instr_nxt p1 p2
         | _ -> raise ( Failure "wow wtf" ) 
         ) 

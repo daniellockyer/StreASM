@@ -37,7 +37,7 @@ let lookup (register: string) =
     if Hashtbl.mem registers register then
         Hashtbl.find registers register
     else
-        0    (* 0 for now but would be nice to return some kind of null maybe?*)
+        raise (Failure ("The register " ^ register ^ " is unbound"))
     ;;
 
 let value (register: string) =
@@ -50,7 +50,7 @@ let value (register: string) =
             let inner = Str.matched_group 2 register in
                 lookup (outer ^ (string_of_int (lookup inner))) 
     else
-        0        (* return zero on fail for now: Would be nice to fail*)
+        raise (Failure ("The register " ^ register ^ " is unbound"))
 
 let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 + val2);;
 let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 - val2);;
@@ -60,7 +60,7 @@ let instr_jmp (label: string) =
     if label = "@END" then
         running := false
     else if label = "@NEXT" then
-        incr index
+        ()
     else 
         index := find_label label
 let condjump (b: bool) (label1: string) (label2: string) =
@@ -91,7 +91,7 @@ let get_string (ident: string) =
     let line = read_line() in
         let split = Str.split (Str.regexp " ") line in
             (Hashtbl.replace registers (ident ^ "0") (List.length split);
-            List.iteri (fun i elem -> 
+            List.iteri (fun i elem ->
                 Hashtbl.replace registers (ident ^ (string_of_int (i + 1))) (int_of_string elem)
             ) split));;
 
@@ -100,7 +100,7 @@ let rec make_string (ident: string) (count: int) (total: int) (position: int) =
         if count > total then
             let register = (ident ^ (string_of_int position)) in
                 if Hashtbl.mem registers register then
-                    (print_int (lookup register);
+                    (print_int (lookup register); print_string " ";
                     Hashtbl.remove registers register;
                     make_string ident count (total+1) (position+1))
                 else
@@ -111,7 +111,7 @@ let rec make_string (ident: string) (count: int) (total: int) (position: int) =
         
 let instr_nxt (iden1: string) (iden2: string) = 
     if iden2 = "stdin" then
-        if Str.string_match (Str.regexp "[a-zA-Z]+") iden2 0 then
+        if Str.string_match (Str.regexp "[a-zA-Z]+") iden1 0 then
             get_string iden1
         else
             raise (Failure "wtf col1 looks weird!!!!!!!")

@@ -4,9 +4,9 @@
 	MOV o0, 2
 
 main:
-	NXT i, stdin		;Read stdin and store in r1
-	TSTZ i0, @END, @NEXT	;Terminate if end of stream
+	NXT i, stdin
+	TSTZ i0, @END, @NEXT
 	MOV o1, i1
 	MOV o2, i1
 	NXT stdout, o
-	JMP main 		
+	JMP main

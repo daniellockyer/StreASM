@@ -2,17 +2,14 @@
 ;Take two sequences a1 a2 a3 a4 ... and b1 b2 b3 b4 ..., and produce the sequence
 ;	a1 + 3b1 a2 + 3b2 a3 + 3b3 a4 + 3b4 ...
 
+	MOV o0, 1
+
 main:
-	MOV r1, stdin
-	TSTSNN r1		;Terminate if end of stream
-	JMP @END		
-	SPLIT r2, r1, 0		;Save the first variable in r2
-	SPLIT r3, r1, 1		;Save the second variable in r3
-	TSTSNN r3		;Terminate if we did not have a second parameter in r1
-	JMP @END			
-	MLT r3, 3		;Multiply the second by 3
-	ADD r1, r2, r3		;r1 = r2 + r3
-	MOV stdout, r1		;Output the result
-	NXT stdout		;Start a new line on output
-	NXT stdin
+	NXT i, stdin
+	TSTE i0, 2, @NEXT, @END
+	MOV r1, i1
+	MUL r2, i2, 3
+	ADD r3, r1, r2
+	MOV o1, r3
+	NXT stdout, o
 	JMP main

@@ -51,11 +51,25 @@ let value (register: string) =
                 lookup (outer ^ (string_of_int (lookup inner))) 
     else
         raise (Failure ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index)))
+        
+let bind_value (register: string) (value: int) = 
+    if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\([0-9]+\\)") register 0 then
+        let ident = Str.matched_group 1 register in
+        let number = Str.matched_group 2 register in
+        (* we want to remove many 0's, eg convert 00001 -> 1 *)
+        Hashtbl.replace registers (ident ^ (string_of_int (int_of_string number))) value
+    else if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[0-9]+\\)\\]") register 0 then
+        let ident = Str.matched_group 1 register in
+        let number = Str.matched_group 2 register in
+        Hashtbl.replace registers (ident ^ (string_of_int (lookup number))) value
+    else
+        raise (Failure ("The register " ^ register ^ " looks kinda odd to me? idk there's just something about it I don't like?"))
+        
 
-let instr_add (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 + val2);;
-let instr_sub (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 - val2);;
-let instr_mul (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 * val2);;
-let instr_div (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 / val2);;
+let instr_add (destination: string) (val1: int) (val2: int) = bind_value destination (val1 + val2);;
+let instr_sub (destination: string) (val1: int) (val2: int) = bind_value destination (val1 - val2);;
+let instr_mul (destination: string) (val1: int) (val2: int) = bind_value destination (val1 * val2);;
+let instr_div (destination: string) (val1: int) (val2: int) = bind_value destination (val1 / val2);;
 let instr_jmp (label: string) = 
     if label = "@END" then
         running := false
@@ -74,25 +88,25 @@ let instr_tstg (v1: int) (v2: int) (label1: string) (label2: string) = condjump 
 let instr_tstge (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1>=v2) label1 label2;;
 let instr_tstl (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1<v2) label1 label2;;
 let instr_tstle (v1: int) (v2: int) (label1: string) (label2: string) = condjump (v1<=v2) label1 label2;;
-let instr_and (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 land val2);;
-let instr_nand (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (lnot (val1 land val2));;
-let instr_or (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 lor val2);;
-let instr_xor (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (val1 lxor val2);;
-let instr_nor (destination: string) (val1: int) (val2: int) = Hashtbl.replace registers destination (lnot (val1 lor val2));;
-let instr_com (destination: string) (value: int) = Hashtbl.replace registers destination (lnot value);;
-let instr_mov (register: string) (value: int) = Hashtbl.replace registers register value;;
-let instr_clr (register: string) = Hashtbl.replace registers register 0;;
-let instr_bs (register: string) (v: int) = Hashtbl.replace registers register ((value register) lor (1 lsl v));;
-let instr_bc (register: string) (v: int) = Hashtbl.replace registers register ((value register) land (lnot (1 lsl v)));;
+let instr_and (destination: string) (val1: int) (val2: int) = bind_value destination (val1 land val2);;
+let instr_nand (destination: string) (val1: int) (val2: int) = bind_value destination (lnot (val1 land val2));;
+let instr_or (destination: string) (val1: int) (val2: int) = bind_value destination (val1 lor val2);;
+let instr_xor (destination: string) (val1: int) (val2: int) = bind_value destination (val1 lxor val2);;
+let instr_nor (destination: string) (val1: int) (val2: int) = bind_value destination (lnot (val1 lor val2));;
+let instr_com (destination: string) (value: int) = bind_value destination (lnot value);;
+let instr_mov (register: string) (value: int) = bind_value register value;;
+let instr_clr (register: string) = bind_value register 0;;
+let instr_bs (register: string) (v: int) = bind_value register ((value register) lor (1 lsl v));;
+let instr_bc (register: string) (v: int) = bind_value register ((value register) land (lnot (1 lsl v)));;
 let instr_bt (reg_val: int) (bit: int) (label1: string) (label2: string) = condjump ((reg_val land (1 lsl bit)) > 0) label1 label2;;
 
 let get_string (ident: string) = 
     (print_string "\n> ";
     let line = read_line() in
         let split = Str.split (Str.regexp " ") line in
-            (Hashtbl.replace registers (ident ^ "0") (List.length split);
+            (bind_value (ident ^ "0") (List.length split);
             List.iteri (fun i elem ->
-                Hashtbl.replace registers (ident ^ (string_of_int (i + 1))) (int_of_string elem)
+                bind_value (ident ^ (string_of_int (i + 1))) (int_of_string elem)
             ) split));;
 
 let rec make_string (ident: string) (count: int) (total: int) (position: int) =

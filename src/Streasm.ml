@@ -2,7 +2,7 @@ open Hashtbl;;
 open Lexing;;
 
 let running = ref true;;
-let return_stack : int list ref = ref (0 :: []);;
+let return_stack : int list ref = ref [];;
 let lines : string array array ref = ref (Array.of_list ((Array.of_list ("" :: [])) :: []));;
 let index = ref 0;;
 let registers = Hashtbl.create 5;;

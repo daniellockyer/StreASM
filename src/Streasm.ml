@@ -14,7 +14,7 @@ let map_label (label: string) (line: int) =
             if Hashtbl.find labels label = line then
                 ()
             else
-                raise (Failure "wow wtf u doin' m8 dat label is defined")
+                raise (Failure ("Label " ^ label ^ " defined multiple times"))
         else
             Hashtbl.replace labels label line;;           
 let rec find_label_aux (label: string) (index: int) = 
@@ -26,7 +26,7 @@ let rec find_label_aux (label: string) (index: int) =
             else
                 find_label_aux label (index + 1)
     else
-        raise (Failure "wow bitch get sum dem labels")
+        raise (Failure ("Label " ^ label ^ " not defined."))
 let find_label (label: string) =             
     if Hashtbl.mem labels label then
         Hashtbl.find labels label
@@ -63,7 +63,7 @@ let bind_value (register: string) (value: int) =
         let number = Str.matched_group 2 register in
         Hashtbl.replace registers (ident ^ (string_of_int (lookup number))) value
     else
-        raise (Failure ("The register " ^ register ^ " looks kinda odd to me? idk there's just something about it I don't like?"))
+        raise (Failure ("Expected a register, recieved " ^ register))
         
 
 let instr_add (destination: string) (val1: int) (val2: int) = bind_value destination (val1 + val2);;
@@ -131,7 +131,7 @@ let rec make_string (ident: string) (count: int) (total: int) (position: int) =
             else
                 make_string ident count total (position+1)
     else if count <> 0 then
-        raise (Failure "wow we searched 1024 things and didn't find your shit fuck off and sort your life out")
+        raise (Failure ("Did not find " ^ (string_of_int count) ^ " values within 1024 indexes of " ^ ident))
     else
         ()
         
@@ -140,7 +140,7 @@ let instr_nxt (iden1: string) (iden2: string) =
         if Str.string_match (Str.regexp "[a-zA-Z]+") iden1 0 then
             get_string iden1
         else
-            raise (Failure "wtf col1 looks weird!!!!!!!")
+            raise (Failure ("\"" ^ iden1 ^ "\" unexpected for pairing with stdin."))
     else if iden1 = "stdout" then
         if Str.string_match (Str.regexp "[a-zA-Z]+") iden2 0 then
             (if Hashtbl.mem registers iden2 then
@@ -149,9 +149,10 @@ let instr_nxt (iden1: string) (iden2: string) =
                 make_string iden2 0 0 1;
             print_newline())
         else
-            raise (Failure "wtf col2 looks weird!!!!!!!") 
+            raise (Failure ("\"" ^ iden2 ^ "\" unexpected for pairing with stdout."))
     else 
-        raise (Failure "jeez ya gotta use stdin for col2 or stdout for col1!")
+        raise (Failure "stdin must be used as the second parameter for NXT,
+        or stdout used as the first.")
 
 let interpret (input: string array array) =
     (lines := input;
@@ -194,6 +195,6 @@ let interpret (input: string array array) =
         | "INCR" -> instr_incr p1 
         | "DECR" -> instr_decr p1
         | "NXT" -> instr_nxt p1 p2
-        | _ -> raise ( Failure "wow wtf" ) 
+        | _ -> raise ( Failure "Unknown Instruction")
         ) 
     done);;

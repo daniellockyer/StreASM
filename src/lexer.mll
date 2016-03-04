@@ -33,6 +33,7 @@ rule lexer_main = parse
     | "TSTGE"	        { INSTR_TSTGE }
     | "TSTL"	        { INSTR_TSTL }
     | "TSTLE"	        { INSTR_TSTLE }
+    | "TSTB"            { INSTR_TSTB }
     | "AND"		        { INSTR_AND }
     | "OR"		        { INSTR_OR }
     | "NOR"		        { INSTR_NOR }
@@ -45,7 +46,6 @@ rule lexer_main = parse
     | "MOV"		        { INSTR_MOV }
     | "CLR"		        { INSTR_CLR }
     | "BS"		        { INSTR_BS }
-    | "BT"		        { INSTR_BT }
     | "NXT"		        { INSTR_NXT }
     | "INCR"            { INSTR_INCR }
     | "DECR"            { INSTR_DECR }

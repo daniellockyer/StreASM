@@ -4,7 +4,7 @@
 	NXT stdout, o
 	JMP @END
 
-func
+func:
 	MOV o1, 1234
 	NXT stdout, o
 	RET

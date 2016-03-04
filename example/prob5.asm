@@ -28,12 +28,14 @@ main:
 	MOV r2, 0			;r2 is an accumulator to be put on the output
 	MOV r0, 1			;r0 is the index for stored values
 	MOV r3, c0			;r3 is the index for Fib numbers
-out	TSTG r0, c0, output, @NEXT
+out:
+	TSTG r0, c0, output, @NEXT
 	MUL r1, f[r3], c[r0]		;ex: acc += fib[count + 1 - iter] * stored[count]
 	ADD r2, r2, r1
 	INCR r0				;Increment/Decrement the two indexes to look at
 	DECR r3				;the next values
 	JMP out
-output	MOV o1, r2			;Put our stuff on the outputs
+output:
+	MOV o1, r2			;Put our stuff on the outputs
 	NXT stdout,o
 	JMP main

@@ -3,7 +3,7 @@ open Lexer
 open Parser
 open Arg
 open Printf
-exception Error of exn * (int * int * string)
+exception Error of exn * (int * string)
 
 let parseProgram c = 
     let lexbuf = Lexing.from_channel c in
@@ -12,21 +12,18 @@ let parseProgram c =
         	    interpret parsed
     	with Parsing.Parse_error ->
     		begin
-		        let curr = lexbuf.Lexing.lex_curr_p in
 		        let line = !instructionPointer in
-		        let cnum = curr.Lexing.pos_cnum - curr.Lexing.pos_bol in
 		        let tok = Lexing.lexeme lexbuf in
 		        	begin
 		        		print_string "Line: "; print_int line; print_newline();
-		        		print_string "Column: "; print_int cnum; print_newline();
 		        		print_string ("Token: <" ^ tok ^ ">\n"); print_newline();
-				        raise (Error (Parsing.Parse_error, (line,cnum,tok)))
+				        raise (Error (Parsing.Parse_error, (line,tok)))
 		        	end
 	      	end;;
 
 let arg = ref stdin in
 	let setProg p = arg := open_in p in
-		parse [] setProg "./main PROGRAM_FILE";
+		parse [] setProg "./main <program_file>";
 
 let _ = parseProgram !arg in
 	flush stdout;;

@@ -1,0 +1,1 @@
+	MOV stdout, stdin

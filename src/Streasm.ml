@@ -77,20 +77,22 @@ let get_string (ident: string) =
         let split = Str.split (Str.regexp " ") line in
             (bind_value (ident ^ "0") (List.length split);
                 List.iteri (fun i elem -> bind_value (ident ^ (string_of_int (i + 1))) (int_of_string elem)) split)
-    with End_of_file -> running:=false;;
+    with End_of_file -> running := false;;
 
-let rec make_string (ident: string) (count: int) (total: int) (position: int) =
-    if (count = 0 || count > total) && position < 1024 then
-        let register = (ident ^ (string_of_int position)) in
-            if Hashtbl.mem registers register then
-                (print_int (lookup register); print_string " ";
-                Hashtbl.remove registers register;
-                make_string ident count (total+1) (position+1))
-            else make_string ident count total (position+1)
-    else if count <> 0 then
-        raise (Failure ("Did not find " ^ (string_of_int count) ^ " values within 1024 indexes of " ^ ident))
+let rec make_string (ident: string) (target: int) (found: int) (position: int) =
+    if position < 1024 then
+        if target = 0 || target <> found then
+            let register = (ident ^ (string_of_int position)) in
+                if Hashtbl.mem registers register then
+                    (print_int (lookup register); print_string " ";
+                    Hashtbl.remove registers register;
+                    make_string ident target (found + 1) (position + 1))
+                else make_string ident target found (position + 1)
+        else ()      
+    else if target <> 0 then
+        raise (Failure ("Did not find " ^ (string_of_int target) ^ " values within 1024 indexes of " ^ ident))    
     else ()
-        
+    
 let instr_nxt (iden1: string) (iden2: string) = 
     if iden2 = "stdin" then
         if Str.string_match (Str.regexp "[a-zA-Z]+") iden1 0 then
@@ -99,8 +101,8 @@ let instr_nxt (iden1: string) (iden2: string) =
             raise (Failure ("\"" ^ iden1 ^ "\" unexpected for pairing with stdin."))
     else if iden1 = "stdout" then
         if Str.string_match (Str.regexp "[a-zA-Z]+") iden2 0 then
-            (if Hashtbl.mem registers iden2 then
-                make_string iden2 (lookup (iden2 ^ "0")) 0 1
+            (if Hashtbl.mem registers (iden2 ^ "0") then
+                (make_string iden2 (lookup (iden2 ^ "0")) 0 1; Hashtbl.remove registers (iden2 ^ "0"))
             else
                 make_string iden2 0 0 1;
             print_newline())

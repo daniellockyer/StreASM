@@ -4,8 +4,14 @@ let running = ref true;;
 let return_stack : int list ref = ref [];;
 let lines : string array array ref = ref (Array.of_list ((Array.of_list ("" :: [])) :: []));;
 let index = ref 0;;
+let renamings = Hashtbl.create 16;;
 let registers = Hashtbl.create 32;;
 let labels = Hashtbl.create 32;;
+let regex_str = (Str.regexp "\\([a-zA-Z]+\\)")
+let regex_lit = (Str.regexp "\\([-]?[0-9]+\\)")
+let regex_iden = (Str.regexp "\\([a-zA-Z]+\\)")
+let regex_reg = (Str.regexp "\\([a-zA-Z]+\\)\\([-]?[0-9]+\\)")
+let regex_nreg = (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[-]?[0-9]+\\)\\]")
 
 let map_label (label: string) (line: int) = 
     if label <> "" then
@@ -25,35 +31,59 @@ let rec find_label_aux (label: string) (index: int) =
 
 let find_label (label: string) =             
     if Hashtbl.mem labels label then Hashtbl.find labels label 
-    else find_label_aux label !index        
+    else find_label_aux label !index
+    
+let get_name_binding (name: string) = 
+    if Hashtbl.mem renamings name then Hashtbl.find renamings name
+    else raise (Failure ("The naming " ^ name ^ " is undefined at instruction " ^ (string_of_int !index)))   
 
-let lookup (register: string) = 
-    if Hashtbl.mem registers register then Hashtbl.find registers register
-    else raise (Failure ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index)))
+let rec lookup (register: string) =
+    if Str.string_match regex_reg register 0 then
+        if Hashtbl.mem registers register then Hashtbl.find registers register
+        else raise (Failure ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index)))
+    else if Str.string_match regex_str register 0 then
+        lookup (get_name_binding register)
+    else raise (Failure ("Unexpected error: Asked to lookup " ^ register))
 
-let value (register: string) =
-    if Str.string_match (Str.regexp "[-]?[0-9]+") register 0 then
+let rec value (register: string) =
+    if Str.string_match regex_lit register 0 then
         int_of_string register
-    else if Str.string_match (Str.regexp "[a-zA-Z]+[-]?[0-9]+") register 0 then
+    else if Str.string_match regex_reg register 0 then
         lookup register
-    else if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[-]?[0-9]+\\)\\]") register 0 then  (* match for example r[r1] *)
+    else if Str.string_match regex_nreg register 0 then  (* match for example r[r1] *)
         let outer = Str.matched_group 1 register in
             let inner = Str.matched_group 2 register in
                 lookup (outer ^ (string_of_int (lookup inner))) 
+    else if Str.string_match regex_str register 0 then (* match a naming defined with DEF *)
+        value (get_name_binding register)
     else raise (Failure ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index)))
-        
-let bind_value (register: string) (value: int) = 
-    if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\([-]?[0-9]+\\)") register 0 then
+    
+let clean_regname (register: string) =
+    if Str.string_match regex_reg register 0 then
         let ident = Str.matched_group 1 register in
         let number = Str.matched_group 2 register in
         (* we want to remove many 0's, eg convert 00001 -> 1 *)
-        Hashtbl.replace registers (ident ^ (string_of_int (int_of_string number))) value
-    else if Str.string_match (Str.regexp "\\([a-zA-Z]+\\)\\[\\([a-zA-Z]+[-]?[0-9]+\\)\\]") register 0 then
+        (ident ^ (string_of_int (int_of_string number)))
+    else if Str.string_match regex_nreg register 0 then
         let ident = Str.matched_group 1 register in
         let number = Str.matched_group 2 register in
-        Hashtbl.replace registers (ident ^ (string_of_int (lookup number))) value
+        (ident ^ (string_of_int (lookup number)))
     else
-        raise (Failure ("Expected a register, recieved " ^ register))
+        raise (Failure ("Expected a register, recieved '" ^ register ^ "'"))
+        
+let bind_value (register: string) (value: int) = 
+    if ((Str.string_match regex_reg register 0) || (Str.string_match regex_nreg register 0)) then
+        Hashtbl.replace registers (clean_regname register) value
+    else if Str.string_match regex_str register 0 then
+        Hashtbl.replace registers (get_name_binding register) value
+    else
+        raise (Failure ("Expected a register, recieved '" ^ register ^ "'"))
+        
+let rename (new_name: string) (register: string) =
+    if Str.string_match regex_reg register 0 then
+        Hashtbl.replace renamings new_name (clean_regname register)
+    else
+        raise (Failure ("Expected a register, recieved '" ^ register ^ "'"))
 
 let instr_jmp (label: string) = 
     if label = "@END" then running := false
@@ -107,7 +137,7 @@ let instr_nxt (iden1: string) (iden2: string) =
                 make_string iden2 0 0 1;
             print_newline())
         else raise (Failure ("\"" ^ iden2 ^ "\" unexpected for pairing with stdout."))
-    else raise (Failure "stdin must be used as the second parameter for NXT, or stdout used as the first.")
+    else raise (Failure "stdin must be used as the second parameter for NXT, or stdout used as the first.") 
 
 let interpret (input: string array array) =
     (lines := input;
@@ -148,5 +178,6 @@ let interpret (input: string array array) =
         | "RET" ->      instr_ret ()
         | "BS" ->       instr_bs p1 (value p2) (value p3)
         | "NXT" ->      instr_nxt p1 p2
+        | "DEF" ->      rename p1 p2
         | _ ->          raise ( Failure ("Unknown Instruction: " ^ instruction))) 
     done);;

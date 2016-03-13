@@ -9,6 +9,7 @@
 
 let literal = '-'? ['0'-'9']+
 let alpha = ['a'-'z' 'A'-'Z']
+let str = alpha+
 let register = alpha literal | alpha '[' alpha literal ']'
 let comment = ";"([^'\n']+)
 
@@ -53,6 +54,7 @@ rule lexer_main = parse
     | "stdout" as o     { STDOUT (o) }
     | "@END" as a       { LABEL_END(a) }
     | "@NEXT" as a      { LABEL_NEXT(a) }
-    | alpha+ as a       { LABEL (a) }
+    | "#DEF"            { DEF }
+    | str as a          { STRING (a) }
     | _                 { syntax_error lexbuf }
     | eof      	        { EOF }

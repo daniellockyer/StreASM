@@ -77,7 +77,7 @@ let get_string (ident: string) =
         let split = Str.split (Str.regexp " ") line in
             (bind_value (ident ^ "0") (List.length split);
                 List.iteri (fun i elem -> bind_value (ident ^ (string_of_int (i + 1))) (int_of_string elem)) split)
-    with End_of_file -> running := false;;
+    with End_of_file -> bind_value (ident ^ "0") 0;;
 
 let rec make_string (ident: string) (target: int) (found: int) (position: int) =
     if position < 1024 then

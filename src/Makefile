@@ -11,9 +11,9 @@
 #                  existing modules.  (The graph is stored in the file
 #                  .depend)
 
-# These are the object files needed to rebuild the main executable file
+# These are the object files needed to rebuild the mysplinterpreter executable file
 #
-OBJS = Streasm.cmo parser.cmo lexer.cmo main.cmo 
+OBJS = Streasm.cmo parser.cmo lexer.cmo mysplinterpreter.cmo 
 
 COMMONOBJS = str.cma
 
@@ -22,15 +22,15 @@ DEPEND += lexer.ml parser.ml
 
 # When "make" is invoked with no arguments, we build an executable 
 # typechecker, after building everything that it depends on
-all: $(DEPEND) $(OBJS) main
+all: $(DEPEND) $(OBJS) mysplinterpreter
 
 # Include an automatically generated list of dependencies between source files
 include .depend
 
 # Build an executable typechecker
-main: $(OBJS) main.cmo 
+mysplinterpreter: $(OBJS) mysplinterpreter.cmo 
 	@echo Linking $@
-	ocamlc -o $@ $(COMMONOBJS) $(OBJS) 
+	ocamlc -o $@ $(COMMONOBJS) $(OBJS)
 
 # Compile an ML module interface
 %.cmi : %.mli
@@ -54,7 +54,7 @@ parser.ml parser.mli: parser.mly
 
 # Clean up the directory
 clean::
-	rm -rf lexer.ml parser.ml parser.mli *.o *.cmo *.cmi parser.output main c TAGS *~ 
+	rm -rf lexer.ml parser.ml parser.mli *.o *.cmo *.cmi parser.output mysplinterpreter c TAGS *~ 
 
 # Rebuild intermodule dependencies
 depend:: $(DEPEND) 

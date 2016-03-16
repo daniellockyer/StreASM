@@ -9,9 +9,9 @@
 %token INSTR_AND INSTR_OR INSTR_NOR INSTR_XOR INSTR_NAND INSTR_COM
 %token INSTR_CLR INSTR_JMP INSTR_CALL INSTR_RET
 %token INSTR_TSTZ INSTR_TSTE INSTR_TSTG INSTR_TSTGE INSTR_TSTL INSTR_TSTLE INSTR_TSTB
-%token COMMA COLON EOF EOL TAB 
+%token COMMA COLON EOF EOL TAB DEF
 %token <string> STDIN STDOUT
-%token <string> IDENTIFIER REGISTER LABEL LABEL_NEXT LABEL_END
+%token <string> IDENTIFIER REGISTER STRING LABEL_NEXT LABEL_END
 %token <string> BINARY LITERAL
 
 %start parser_main
@@ -38,6 +38,8 @@ line
     | label eol tab instruction tab { add_line $1 $4 }
     | TAB instruction tab { add_line "" $2 }
     | TAB instruction { add_line "" $2 }
+    | define tab { add_line "" $1 }
+    | define { add_line "" $1 }
     | tab {}
 ;
 
@@ -51,7 +53,10 @@ tab
     | TAB       { }
 ;
 
-register: REGISTER { $1 };
+register
+    : REGISTER { $1 }
+    | STRING   { $1 }
+;
 
 value
     : register { $1 }
@@ -64,12 +69,12 @@ literal
 ;
 
 label_ref
-    : LABEL { $1 }
+    : STRING { $1 }
     | LABEL_NEXT { $1 }
     | LABEL_END { $1 }
 ;
 
-label: LABEL COLON { $1 };
+label: STRING COLON { $1 };
 
 ident1
     : IDENTIFIER { $1 }
@@ -79,6 +84,10 @@ ident1
 ident2
     : IDENTIFIER { $1 }
     | STDIN     { $1 }
+;
+
+define
+    : DEF STRING register { add_instr "DEF" $2 $3 "" "" }
 ;
 
 instruction
@@ -99,7 +108,7 @@ instruction
     | INSTR_COM register COMMA value { add_instr "COM" $2 $4 "" "" }
     | INSTR_CLR register { add_instr "CLR" $2 "" "" "" }
     | INSTR_JMP label_ref { add_instr "JMP" $2 "" "" "" }
-    | INSTR_CALL LABEL { add_instr "CALL" $2 "" "" "" }
+    | INSTR_CALL STRING { add_instr "CALL" $2 "" "" "" }
     | INSTR_RET { add_instr "RET" "" "" "" "" }
     | INSTR_TSTZ value COMMA label_ref COMMA label_ref { add_instr "TSTZ" $2 $4 $6 "" }
     | INSTR_TSTE value COMMA value COMMA label_ref COMMA label_ref { add_instr "TSTE" $2 $4 $6 $8 }

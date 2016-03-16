@@ -10,7 +10,7 @@
 let literal = '-'? ['0'-'9']+
 let alpha = ['a'-'z' 'A'-'Z']
 let str = alpha+
-let register = alpha literal | alpha '[' alpha literal ']'
+let register = alpha literal | alpha '[' alpha literal ']' | alpha '[' str ']'
 let comment = ";"([^'\n']+)
 
 rule lexer_main = parse

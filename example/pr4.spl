@@ -8,9 +8,9 @@
 	MOV r1, 0		;r0 is an accumulator, we add everything here
 
 main:
-	NXT i, stdin		;Get the input
+	NXT i, stdin			;Get the input
 	TSTZ i0, @END, @NEXT
-	ADD r1, i1, r1		;Add it to the accumulator
-	MOV o1, r1		;Output it
+	ADD r1, i1, r1			;Add it to the accumulator
+	MOV o1, r1				;Output it
 	NXT stdout, o
-	JMP main		;Loop
+	JMP main				;Loop

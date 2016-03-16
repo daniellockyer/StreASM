@@ -16,14 +16,14 @@ let parseProgram c =
 		        let tok = Lexing.lexeme lexbuf in
 		        	begin
 		        		print_string "Line: "; print_int line; print_newline();
-		        		print_string ("Token: <" ^ tok ^ ">\n"); print_newline();
+		        		print_endline ("Token: \"" ^ tok ^ "\"\n");
 				        raise (Error (Parsing.Parse_error, (line,tok)))
 		        	end
 	      	end;;
 
 let arg = ref stdin in
 	let setProg p = arg := open_in p in
-		parse [] setProg "./main <program_file>";
+		parse [] setProg "./main <program_file> < input";
 
 let _ = parseProgram !arg in
 	flush stdout;;

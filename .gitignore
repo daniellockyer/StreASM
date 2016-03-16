@@ -1,5 +1,5 @@
 src/lexer.ml
-src/main
+src/mysplinterpreter
 src/parser.ml
 src/parser.mli
 src/parser.output

@@ -87,7 +87,7 @@ ident2
 ;
 
 define
-    : DEF STRING register { (add_instr "DEF" $2 $3 "" "") }
+    : DEF STRING register { add_instr "DEF" $2 $3 "" "" }
 ;
 
 instruction

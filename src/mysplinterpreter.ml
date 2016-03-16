@@ -3,7 +3,6 @@ open Lexer
 open Parser
 open Arg
 open Printf
-exception Error of exn * (int * string)
 
 let parseProgram c = 
     let lexbuf = Lexing.from_channel c in
@@ -11,15 +10,11 @@ let parseProgram c =
         	let parsed = parser_main lexer_main lexbuf in
         	    interpret parsed
     	with Parsing.Parse_error ->
-    		begin
-		        let line = !instructionPointer in
-		        let tok = Lexing.lexeme lexbuf in
-		        	begin
-		        		print_string "Line: "; print_int line; print_newline();
-		        		print_endline ("Token: \"" ^ tok ^ "\"\n");
-				        raise (Error (Parsing.Parse_error, (line,tok)))
-		        	end
-	      	end;;
+            (print_endline "*** ERROR ***";
+            print_endline "An error occurred whilst parsing the file.\n";
+            print_endline ("Line: " ^ (string_of_int !instructionPointer));
+            print_endline ("Token: \"" ^ (Lexing.lexeme lexbuf) ^ "\"\n");
+            print_endline "Please check the syntax and formatting of the line stated above. (A common issue is not indenting the instructions.)");;
 
 let arg = ref stdin in
 	let setProg p = arg := open_in p in

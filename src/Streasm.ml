@@ -14,13 +14,16 @@ let regex_reg = regex_char ^ regex_lit
 let regex_nreg = regex_char ^ "\\[\\([a-zA-Z]-?[0-9]+\\)\\]"
 let regex_nreg2 = regex_char ^ "\\[\\([a-zA-Z]+\\)\\]"
 
+exception Interpreter_error;;
+let throw_error msg = (print_endline ("[ Interpreter_error - line "  ^ (string_of_int !index) ^ " ] " ^ msg);
+                        raise Interpreter_error);;
+
 let map_label (label: string) (line: int) = 
     if label <> "" then
         if Hashtbl.mem labels label then
             if Hashtbl.find labels label = line then ()
-            else raise (Failure ("Label " ^ label ^ " defined multiple times"))
-        else
-            Hashtbl.replace labels label line
+            else throw_error ("Label " ^ label ^ " defined multiple times")
+        else Hashtbl.replace labels label line
 
 let rec find_label_aux (label: string) (index: int) =
     if index < Array.length !lines then
@@ -28,7 +31,7 @@ let rec find_label_aux (label: string) (index: int) =
             let (found_label: string) = Array.get l 0 in
                 if label = found_label then index
                 else find_label_aux label (index + 1)
-    else raise (Failure ("Label " ^ label ^ " not defined."))
+    else throw_error ("Label " ^ label ^ " not defined")
 
 let find_label (label: string) =             
     if Hashtbl.mem labels label then Hashtbl.find labels label 
@@ -36,15 +39,15 @@ let find_label (label: string) =
     
 let get_name_binding (name: string) =
     if Hashtbl.mem renamings name then Hashtbl.find renamings name
-    else raise (Failure ("The naming " ^ name ^ " is undefined at instruction " ^ (string_of_int !index)))   
+    else throw_error ("The naming " ^ name ^ " is undefined at instruction " ^ (string_of_int !index))
 
 let rec lookup (register: string) =
     if Str.string_match (Str.regexp regex_reg) register 0 then
         if Hashtbl.mem registers register then Hashtbl.find registers register
-        else raise (Failure ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index)))
+        else throw_error ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index))
     else if Str.string_match (Str.regexp regex_str) register 0 then
         lookup (get_name_binding register)
-    else raise (Failure ("Unexpected error: Asked to lookup " ^ register))
+    else throw_error ("Unexpected error: Asked to lookup " ^ register)
 
 let rec value (register: string) =
     if Str.string_match (Str.regexp regex_lit) register 0 then
@@ -57,8 +60,8 @@ let rec value (register: string) =
                 lookup (outer ^ (string_of_int (lookup inner)))
     else if Str.string_match (Str.regexp regex_str) register 0 then (* match a naming defined with DEF *)
         value (get_name_binding register)
-    else raise (Failure ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index)))
-    
+    else throw_error ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index))
+
 let clean_regname (register: string) =
     if Str.string_match (Str.regexp regex_reg) register 0 then
         let ident = Str.matched_group 1 register in
@@ -70,7 +73,7 @@ let clean_regname (register: string) =
         let number = Str.matched_group 2 register in
         (ident ^ (string_of_int (lookup number)))
     else
-        raise (Failure ("Expected a register, received '" ^ register ^ "'"))
+        throw_error ("Expected a register, received '" ^ register ^ "'")
         
 let bind_value (register: string) (value: int) = 
     if ((Str.string_match (Str.regexp regex_reg) register 0) || (Str.string_match (Str.regexp regex_nreg) register 0)) then
@@ -78,13 +81,13 @@ let bind_value (register: string) (value: int) =
     else if Str.string_match (Str.regexp regex_str) register 0 then
         Hashtbl.replace registers (get_name_binding register) value
     else
-        raise (Failure ("Expected a register, received '" ^ register ^ "'"))
+        throw_error ("Expected a register, received '" ^ register ^ "'")
 
 let rename (new_name: string) (register: string) =
     if Str.string_match (Str.regexp regex_reg) register 0 then
         Hashtbl.replace renamings new_name (clean_regname register)
     else
-        raise (Failure ("Expected a register, received '" ^ register ^ "'"))
+        throw_error ("Expected a register, received '" ^ register ^ "'")
 
 let instr_jmp (label: string) = 
     if label = "@END" then running := false
@@ -121,7 +124,7 @@ let rec make_string (ident: string) (target: int) (found: int) (position: int) =
                 else make_string ident target found (position + 1)
         else ()      
     else if target <> 0 then
-        raise (Failure ("Did not find " ^ (string_of_int target) ^ " values within 1024 indexes of " ^ ident))    
+        throw_error ("Did not find " ^ (string_of_int target) ^ " values within 1024 indexes of " ^ ident)
     else ()
     
 let instr_nxt (iden1: string) (iden2: string) = 
@@ -129,7 +132,7 @@ let instr_nxt (iden1: string) (iden2: string) =
         if Str.string_match (Str.regexp regex_char) iden1 0 then
             get_string iden1
         else
-            raise (Failure ("\"" ^ iden1 ^ "\" unexpected for pairing with stdin."))
+            throw_error ("\"" ^ iden1 ^ "\" unexpected for pairing with stdin")
     else if iden1 = "stdout" then
         if Str.string_match (Str.regexp regex_char) iden2 0 then
             (if Hashtbl.mem registers (iden2 ^ "0") then
@@ -137,8 +140,8 @@ let instr_nxt (iden1: string) (iden2: string) =
             else
                 make_string iden2 0 0 1;
             print_newline())
-        else raise (Failure ("\"" ^ iden2 ^ "\" unexpected for pairing with stdout."))
-    else raise (Failure "stdin must be used as the second parameter for NXT, or stdout used as the first.") 
+        else throw_error ("\"" ^ iden2 ^ "\" unexpected for pairing with stdout")
+    else throw_error "stdin must be used as the second parameter for NXT, or stdout used as the first"
 
 let interpret (input: string array array) =
     (lines := input;
@@ -180,5 +183,5 @@ let interpret (input: string array array) =
         | "BS" ->       instr_bs p1 (value p2) (value p3)
         | "NXT" ->      instr_nxt p1 p2
         | "DEF" ->      rename p1 p2
-        | _ ->          raise ( Failure ("Unknown Instruction: " ^ instruction))) 
+        | _ ->          throw_error ("Unknown Instruction: \"" ^ instruction ^ "\""))
     done);;

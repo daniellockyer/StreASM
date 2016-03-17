@@ -7,16 +7,15 @@ let index = ref 0;;
 let renamings = Hashtbl.create 16;;
 let registers = Hashtbl.create 32;;
 let labels = Hashtbl.create 32;;
-let regex_lit = "\\(-?[0-9]+\\)"
-let regex_char = "\\([a-zA-Z]\\)"
-let regex_str = "\\([a-zA-Z]+\\)"
-let regex_reg = regex_char ^ regex_lit
-let regex_nreg = regex_char ^ "\\[\\([a-zA-Z]-?[0-9]+\\)\\]"
-let regex_nreg2 = regex_char ^ "\\[\\([a-zA-Z]+\\)\\]"
+let regex_lit = "\\(-?[0-9]+\\)";;
+let regex_char = "\\([a-zA-Z]\\)";;
+let regex_str = "\\([a-zA-Z]+\\)";;
+let regex_reg = regex_char ^ regex_lit;;
+let regex_nreg = regex_char ^ "\\[\\([a-zA-Z]-?[0-9]+\\)\\]\\|" ^ regex_char ^ "\\[\\([a-zA-Z]+\\)\\]";;
 
 exception Interpreter_error;;
-let throw_error msg = (print_endline ("[ Interpreter_error - line "  ^ (string_of_int !index) ^ " ] " ^ msg);
-                        raise Interpreter_error);;
+let throw_error_aux error msg = (print_endline ("[ " ^ (Printexc.to_string error) ^ " - line "  ^ (string_of_int !index) ^ " ] " ^ msg); raise error;);;
+let throw_error msg = throw_error_aux Interpreter_error msg;;
 
 let map_label (label: string) (line: int) = 
     if label <> "" then
@@ -54,10 +53,12 @@ let rec value (register: string) =
         int_of_string register
     else if Str.string_match (Str.regexp regex_reg) register 0 then
         lookup register
-    else if Str.string_match (Str.regexp regex_nreg) register 0 || Str.string_match (Str.regexp regex_nreg2) register 0 then  (* match for example r[r1] or r[nicename] *)
+    else if Str.string_match (Str.regexp regex_nreg) register 0 then  (* match for example r[r1] or r[nicename] *)
         let outer = Str.matched_group 1 register in
             let inner = Str.matched_group 2 register in
-                lookup (outer ^ (string_of_int (lookup inner)))
+                if Str.string_match (Str.regexp regex_str) inner 0 then
+                    lookup (outer ^ (string_of_int (lookup (get_name_binding inner))))
+                else lookup (outer ^ (string_of_int (lookup inner)))
     else if Str.string_match (Str.regexp regex_str) register 0 then (* match a naming defined with DEF *)
         value (get_name_binding register)
     else throw_error ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index))
@@ -155,33 +156,35 @@ let interpret (input: string array array) =
         let p4 = Array.get l 5 in
         (map_label label !index; incr index;
         (*print_string ("<" ^ (string_of_int !index) ^ "> <" ^ label ^ "> <" ^ instruction ^ "> " ^ p1 ^ " " ^ p2 ^ " " ^ p3 ^ " " ^ p4 ^ "\n");*)
-        match instruction with
-          "ADD" ->      bind_value p1 ((value p2) + (value p3))
-        | "SUB" ->      bind_value p1 ((value p2) - (value p3))
-        | "MUL" ->      bind_value p1 ((value p2) * (value p3))
-        | "DIV" ->      bind_value p1 ((value p2) / (value p3))
-        | "AND" ->      bind_value p1 ((value p2) land (value p3))
-        | "OR" ->       bind_value p1 ((value p2) lor (value p3))
-        | "NOR" ->      bind_value p1 (lnot ((value p2) lor (value p3)))
-        | "XOR" ->      bind_value p1 ((value p2) lxor (value p3))
-        | "NAND" ->     bind_value p1 (lnot ((value p2) land (value p3)))
-        | "COM" ->      bind_value p1 (lnot (value p2))
-        | "MOV" ->      bind_value p1 (value p2)
-        | "CLR" ->      bind_value p1 0
-        | "INCR" ->     bind_value p1 ((value p1) + 1)
-        | "DECR" ->     bind_value p1 ((value p1) - 1)
-        | "TSTZ" ->     condjump ((value p1) = 0) p2 p3
-        | "TSTE" ->     condjump ((value p1) = (value p2)) p3 p4
-        | "TSTG" ->     condjump ((value p1) > (value p2)) p3 p4
-        | "TSTGE" ->    condjump ((value p1) >= (value p2)) p3 p4
-        | "TSTL" ->     condjump ((value p1) < (value p2)) p3 p4
-        | "TSTLE" ->    condjump ((value p1) <= (value p2)) p3 p4
-        | "TSTB" ->     condjump (((value p1) land (1 lsl (value p2))) > 0) p3 p4
-        | "JMP" ->      instr_jmp p1
-        | "CALL" ->     (return_stack := (!index :: !return_stack); instr_jmp p1)
-        | "RET" ->      instr_ret ()
-        | "BS" ->       instr_bs p1 (value p2) (value p3)
-        | "NXT" ->      instr_nxt p1 p2
-        | "DEF" ->      rename p1 p2
-        | _ ->          throw_error ("Unknown Instruction: \"" ^ instruction ^ "\""))
+        try
+            match instruction with
+              "ADD" ->      bind_value p1 ((value p2) + (value p3))
+            | "SUB" ->      bind_value p1 ((value p2) - (value p3))
+            | "MUL" ->      bind_value p1 ((value p2) * (value p3))
+            | "DIV" ->      bind_value p1 ((value p2) / (value p3))
+            | "AND" ->      bind_value p1 ((value p2) land (value p3))
+            | "OR" ->       bind_value p1 ((value p2) lor (value p3))
+            | "NOR" ->      bind_value p1 (lnot ((value p2) lor (value p3)))
+            | "XOR" ->      bind_value p1 ((value p2) lxor (value p3))
+            | "NAND" ->     bind_value p1 (lnot ((value p2) land (value p3)))
+            | "COM" ->      bind_value p1 (lnot (value p2))
+            | "MOV" ->      bind_value p1 (value p2)
+            | "CLR" ->      bind_value p1 0
+            | "INCR" ->     bind_value p1 ((value p1) + 1)
+            | "DECR" ->     bind_value p1 ((value p1) - 1)
+            | "TSTZ" ->     condjump ((value p1) = 0) p2 p3
+            | "TSTE" ->     condjump ((value p1) = (value p2)) p3 p4
+            | "TSTG" ->     condjump ((value p1) > (value p2)) p3 p4
+            | "TSTGE" ->    condjump ((value p1) >= (value p2)) p3 p4
+            | "TSTL" ->     condjump ((value p1) < (value p2)) p3 p4
+            | "TSTLE" ->    condjump ((value p1) <= (value p2)) p3 p4
+            | "TSTB" ->     condjump (((value p1) land (1 lsl (value p2))) > 0) p3 p4
+            | "JMP" ->      instr_jmp p1
+            | "CALL" ->     (return_stack := (!index :: !return_stack); instr_jmp p1)
+            | "RET" ->      instr_ret ()
+            | "BS" ->       instr_bs p1 (value p2) (value p3)
+            | "NXT" ->      instr_nxt p1 p2
+            | "DEF" ->      rename p1 p2
+            | _ ->          throw_error ("Unknown Instruction: \"" ^ instruction ^ "\"")
+        with _ as e -> throw_error_aux e "An error occurred when parsing the file");
     done);;

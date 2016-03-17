@@ -5,11 +5,11 @@
 	MOV r1, 0		;This is the value to prepend
 
 main:
-	NXT i, stdin		;Get the input
+	NXT i, stdin	;Get the input
 	TSTZ i0, final, @NEXT
 	MOV o1, r1
 	NXT stdout, o
-	MOV r1, i1
+	MOV r1, i1      ;Update the value in the buffer
 	JMP main		;Loop
 
 final:

@@ -11,7 +11,8 @@ let regex_lit = "\\(-?[0-9]+\\)";;
 let regex_char = "\\([a-zA-Z]\\)";;
 let regex_str = "\\([a-zA-Z]+\\)";;
 let regex_reg = regex_char ^ regex_lit;;
-let regex_nreg = regex_char ^ "\\[\\([a-zA-Z]-?[0-9]+\\)\\]\\|" ^ regex_char ^ "\\[\\([a-zA-Z]+\\)\\]";;
+let regex_nreg = regex_char ^ "\\[\\([a-zA-Z]-?[0-9]+\\)\\]"
+let regex_rnreg = regex_char ^ "\\[\\([a-zA-Z]+\\)\\]"
 
 exception Interpreter_error;;
 let throw_error_aux error msg = (print_endline ("[ " ^ (Printexc.to_string error) ^ " - line "  ^ (string_of_int !index) ^ " ] " ^ msg); raise error;);;
@@ -53,12 +54,14 @@ let rec value (register: string) =
         int_of_string register
     else if Str.string_match (Str.regexp regex_reg) register 0 then
         lookup register
-    else if Str.string_match (Str.regexp regex_nreg) register 0 then  (* match for example r[r1] or r[nicename] *)
-        let outer = Str.matched_group 1 register in
+    else if Str.string_match (Str.regexp regex_nreg) register 0 then  (* match for example r[r1] *)
+        let ident = Str.matched_group 1 register in
             let inner = Str.matched_group 2 register in
-                if Str.string_match (Str.regexp regex_str) inner 0 then
-                    lookup (outer ^ (string_of_int (lookup (get_name_binding inner))))
-                else lookup (outer ^ (string_of_int (lookup inner)))
+                lookup (ident ^ (string_of_int (lookup inner)))
+    else if Str.string_match (Str.regexp regex_rnreg) register 0 then (* match for example r[nicename] *)
+        let ident = Str.matched_group 1 register in
+            let nicename = Str.matched_group 2 register in
+                lookup (ident ^ (string_of_int (lookup (get_name_binding nicename))))
     else if Str.string_match (Str.regexp regex_str) register 0 then (* match a naming defined with DEF *)
         value (get_name_binding register)
     else throw_error ("The register " ^ register ^ " is unbound on instruction " ^ (string_of_int !index))
@@ -186,5 +189,5 @@ let interpret (input: string array array) =
             | "NXT" ->      instr_nxt p1 p2
             | "DEF" ->      rename p1 p2
             | _ ->          throw_error ("Unknown Instruction: \"" ^ instruction ^ "\"")
-        with _ as e -> throw_error_aux e "An error occurred when parsing the file");
+        with _ as e -> throw_error_aux e "An error occurred when interpreting the file");
     done);;

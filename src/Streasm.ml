@@ -102,9 +102,12 @@ let condjump (b: bool) (label1: string) (label2: string) =
     if b then instr_jmp label1
     else instr_jmp label2
 
-let instr_bs (register: string) (pos: int) (v: int) = 
-    if v = 1 then bind_value register ((value register) lor (1 lsl pos))
-    else bind_value register ((value register) land (lnot (1 lsl v)))
+let instr_bs (register: string) (pos: int) (v: int) =
+    if pos >= 0 && pos <= 31 then
+        if v = 1 then bind_value register ((value register) lor (1 lsl pos))
+        else bind_value register ((value register) land (lnot (1 lsl v)))
+    else
+        throw_error "Bit position must be between 0 and 31."
 
 let instr_ret () = match !return_stack with
     [] -> running := false

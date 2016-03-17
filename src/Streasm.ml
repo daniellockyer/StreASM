@@ -119,7 +119,7 @@ let get_string (ident: string) =
             (bind_value (ident ^ "0") (List.length split);
                 List.iteri (fun i elem -> bind_value (ident ^ (string_of_int (i + 1))) (int_of_string elem)) split)
     with
-        | Failure _ -> (throw_error "Only integers can be inputted."; running := false)
+        | Failure _ -> (running := false; throw_error "Only integers can be inputted.";)
         | End_of_file -> bind_value (ident ^ "0") 0;;
 
 let rec make_string (ident: string) (target: int) (found: int) (position: int) =

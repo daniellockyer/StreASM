@@ -16,9 +16,9 @@
 main:
 	NXT i, stdin	;Get the input
 	TSTZ i0, @END, @NEXT
-	ADD o1, i1, n-2		;Output the input + n-2
-	MOV n-2, n-1		;Increase the indexes (n-1 -> n-2)
+	ADD o1, i1, n-2	;Output the input + n-2
+	MOV n-2, n-1	;Increase the indexes (n-1 -> n-2)
 	MOV n-1, o1		;			(n -> n-1)
-	NXT stdout, o		;Output n
+	NXT stdout, o	;Output n
 	JMP main		;Loop
 

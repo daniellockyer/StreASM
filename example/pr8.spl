@@ -6,7 +6,7 @@
 main:
 	NXT i, stdin	;Get the input
 	TSTZ i0, @END, @NEXT
-	ADD o1, i1, r1		;Input + Stored
+	ADD o1, i1, r1	;Input + Stored
 	NXT stdout, o
 	MOV r1, i1      ;Update the value in the buffer
 	JMP main		;Loop

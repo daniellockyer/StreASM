@@ -5,7 +5,7 @@
 ;2a1 + a2
 ;3a1 + 2a2 + a3
 ;4a1 + 3a2 + 2a3 + a4
-;5a1 + 4a2 + 3a3 + 4a4 + a5
+;5a1 + 4a2 + 3a3 + 2a4 + a5
 
 	MOV r0, 0		;This is the current total
 	MOV r1, 0		;This is the sum of a1, a2, a3, ...

@@ -1,2 +1,3 @@
-	MOV r0, 10
-	BS r0, -2, 1
+	MOV r1, 10 ; 1010
+	BS r1, 2, 1
+	NEXT stdout, r

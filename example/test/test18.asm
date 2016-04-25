@@ -1,7 +1,7 @@
-	MOV r1, 10
+	MOV r1, 0
 
 main:
 	MOV o1, r1
 	NXT stdout, o
-	DECR r1
-	TSTG r1, 0, main, @END
+	INCR r1
+	TSTLE r1, 10, main, @END

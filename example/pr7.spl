@@ -8,7 +8,7 @@
 main:
 	NXT i, stdin	;Get the input
 	TSTZ i0, @END, @NEXT
-	SUB o1, i1, i2		;Col 1 = i1 - i2
+	SUB o1, i1, i2	;Col 1 = i1 - i2
 	MOV o2, i1		;Col 2 = i1
 	NXT stdout, o
 	JMP main		;Loop

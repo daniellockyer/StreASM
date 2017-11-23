@@ -9,7 +9,7 @@ main:
 	TSTZ i0, final, @NEXT
 	MOV o1, r1
 	NXT stdout, o
-	MOV r1, i1      ;Update the value in the buffer
+	MOV r1, i1		;Update the value in the buffer
 	JMP main		;Loop
 
 final:

@@ -2,7 +2,7 @@
     open Lexing
     open Parser
     exception Syntax_error of string
-    
+
     let instructionPointer = ref 1;;
     let syntax_error lexbuf = raise (Syntax_error ("Couldn't identify the token on line " ^ (string_of_int !instructionPointer) ^ " with token \"" ^ (Lexing.lexeme lexbuf) ^ "\""));;
 }
@@ -21,7 +21,7 @@ rule lexer_main = parse
     | literal as d      { LITERAL (d) }
     | register as r     { REGISTER (r) }
     | comment           { lexer_main lexbuf }
-    | alpha as a        { IDENTIFIER (Char.escaped a) } 
+    | alpha as a        { IDENTIFIER (Char.escaped a) }
     | ","               { COMMA }
     | ":"               { COLON }
     | "ADD"		        { INSTR_ADD }

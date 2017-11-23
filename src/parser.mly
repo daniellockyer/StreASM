@@ -1,6 +1,5 @@
-%{    
+%{
     let instructions = ref [];;
-    
     let add_line (label: string) (instr: string list) = instructions := Array.of_list (label :: instr) :: !instructions;;
     let add_instr instr p1 p2 p3 p4 = instr :: p1 :: p2 ::p3 :: p4 :: [];;
 %}
@@ -48,7 +47,7 @@ eol
     | EOL       { }
 ;
 
-tab 
+tab
     : tab TAB   { }
     | TAB       { }
 ;

@@ -1,6 +1,6 @@
 ;Delayed Feedback
 ;Take a sequence a1 a2 a3 a4 a5 ... as an input
-;and output 
+;and output
 ;a1
 ;a2
 ;a3 + (a1)

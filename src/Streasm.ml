@@ -18,7 +18,7 @@ exception Interpreter_error;;
 let throw_error_aux error msg = (print_endline ("[ " ^ (Printexc.to_string error) ^ " - line "  ^ (string_of_int !index) ^ " ] " ^ msg); raise error;);;
 let throw_error msg = throw_error_aux Interpreter_error msg;;
 
-let map_label (label: string) (line: int) = 
+let map_label (label: string) (line: int) =
     if label <> "" then
         if Hashtbl.mem labels label then
             if Hashtbl.find labels label = line then ()
@@ -33,10 +33,10 @@ let rec find_label_aux (label: string) (index: int) =
                 else find_label_aux label (index + 1)
     else throw_error ("Label " ^ label ^ " not defined")
 
-let find_label (label: string) =             
-    if Hashtbl.mem labels label then Hashtbl.find labels label 
+let find_label (label: string) =
+    if Hashtbl.mem labels label then Hashtbl.find labels label
     else find_label_aux label !index
-    
+
 let get_name_binding (name: string) =
     if Hashtbl.mem renamings name then Hashtbl.find renamings name
     else throw_error ("The naming " ^ name ^ " is undefined at instruction " ^ (string_of_int !index))
@@ -78,8 +78,8 @@ let clean_regname (register: string) =
         (ident ^ (string_of_int (lookup number)))
     else
         throw_error ("Expected a register, received '" ^ register ^ "'")
-        
-let bind_value (register: string) (value: int) = 
+
+let bind_value (register: string) (value: int) =
     if ((Str.string_match (Str.regexp regex_reg) register 0) || (Str.string_match (Str.regexp regex_nreg) register 0)) then
         Hashtbl.replace registers (clean_regname register) value
     else if Str.string_match (Str.regexp regex_str) register 0 then
@@ -93,7 +93,7 @@ let rename (new_name: string) (register: string) =
     else
         throw_error ("Expected a register, received '" ^ register ^ "'")
 
-let instr_jmp (label: string) = 
+let instr_jmp (label: string) =
     if label = "@END" then running := false
     else if label = "@NEXT" then ()
     else index := find_label label
@@ -112,7 +112,7 @@ let instr_bs (register: string) (pos: int) (v: int) =
 let instr_ret () = match !return_stack with
     [] -> running := false
     | head::rest -> (index := head; return_stack := rest)
-    
+
 let get_string (ident: string) =
     try let line = read_line() in
         let split = Str.split (Str.regexp " ") line in
@@ -131,12 +131,12 @@ let rec make_string (ident: string) (target: int) (found: int) (position: int) =
                     Hashtbl.remove registers register;
                     make_string ident target (found + 1) (position + 1))
                 else make_string ident target found (position + 1)
-        else ()      
+        else ()
     else if target <> 0 then
         throw_error ("Did not find " ^ (string_of_int target) ^ " values within 1024 indexes of " ^ ident)
     else ()
-    
-let instr_nxt (iden1: string) (iden2: string) = 
+
+let instr_nxt (iden1: string) (iden2: string) =
     if iden2 = "stdin" then
         if Str.string_match (Str.regexp regex_char) iden1 0 then
             get_string iden1

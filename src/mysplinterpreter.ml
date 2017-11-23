@@ -4,9 +4,9 @@ open Parser
 open Arg
 open Printf
 
-let parseProgram c = 
+let parseProgram c =
     let lexbuf = Lexing.from_channel c in
-    	try 
+    	try
         	let parsed = parser_main lexer_main lexbuf in
         	    interpret parsed
     	with Parsing.Parse_error ->
